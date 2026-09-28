@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family:system-ui;padding:20px;max-width:420px;margin:auto">
+
+  <style>
+    h2 { color: #1a56db; }
+
+    #search {
+      width:100%;
+      padding:10px 14px;
+      font-size:16px;
+      border:2px solid #1a56db;
+      border-radius:10px;
+      margin-bottom:14px;
+    }
+
+    .student {
+      padding:10px 14px;
+      margin-bottom:6px;
+      background:#f0f4ff;
+      border-radius:8px;
+      border:1px solid #c8d4f0;
+      font-size:15px;
+    }
+
+    mark {
+      background: #f7df1e;
+      border-radius: 3px;
+    }
+
+    #no-results {
+      display:none;
+      color:#9ca3af;
+      text-align:center;
+      padding:20px;
+    }
+  </style>
+
+  <h2>Student Search</h2>
+
+  <input id="search" type="text" placeholder="Search students...">
+
+  <div id="student-list">
+    <div class="student" data-name="Lkhamaa">Lkhamaa — Business Administration</div>
+    <div class="student" data-name="Damdinsuren">Damdinsuren — Economics & Finance</div>
+    <div class="student" data-name="Jennie Kim">Jennie Kim — Fashion & Business</div>
+    <div class="student" data-name="Ryan Reynolds">Ryan Reynolds — Film & Media</div>
+    <div class="student" data-name="Zendaya">Zendaya — Performing Arts</div>
+    <div class="student" data-name="Timothée Chalamet">Timothée Chalamet — Acting</div>
+  </div>
+
+  <p id="no-results">No students found.</p>
+
+  <script>
+    // 1. Select search box and all student elements
+    const search = document.querySelector('#search');
+    const students = document.querySelectorAll('.student');
+    const noResults = document.querySelector('#no-results');
+
+    // 2. Add input event listener
+    search.addEventListener('input', function(e) {
+
+      // 3. Get search term
+      const term = e.target.value.toLowerCase();
+
+      let found = 0;
+
+      // Check every student
+      students.forEach(function(student) {
+
+        const name = student.getAttribute('data-name');
+        const nameLower = name.toLowerCase();
+
+        // Check if name includes search term
+        if (nameLower.includes(term)) {
+
+          // Show student
+          student.style.display = '';
+
+          found++;
+
+          // Highlight matching text
+          if (term !== '') {
+            const regex = new RegExp(`(${term})`, 'gi');
+
+            student.innerHTML = student.textContent.replace(
+              regex,
+              '<mark>$1</mark>'
+            );
+          } else {
+            student.textContent =
+              student.getAttribute('data-name') +
+              ' — ' +
+              student.textContent.split(' — ')[1];
+          }
+
+        } else {
+
+          // Hide student
+          student.style.display = 'none';
+        }
+      });
+
+      // 4. Show "No students found" if nothing matches
+      if (found === 0) {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
+      }
+
+    });
+  </script>
+
+</body>
+</html>
