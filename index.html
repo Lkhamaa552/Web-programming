@@ -1,1 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web Programming — Aranjmaa Lkhamaa</title>
+  <meta name="description" content="Course portfolio of weekly Web Programming assignments by Aranjmaa Lkhamaa.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+  <style>
+/* ============================================================
+   Web Programming — Course Portfolio
+   Aranjmaa Lkhamaa
+   ============================================================ */
 
+:root {
+  --bg: #F3F6F5;
+  --card: #FFFFFF;
+  --accent: #1E7466;
+  --accent-dark: #175E53;
+  --accent-tint: #E8F2EF;
+  --text: #172B2A;
+  --muted: #5F6E6A;
+  --border: #E2E9E6;
+
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans: "Nunito Sans", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+
+  --radius: 18px;
+  --shadow: 0 10px 30px rgba(23, 43, 42, 0.06);
+  --shadow-hover: 0 16px 40px rgba(23, 43, 42, 0.10);
+  --max: 1360px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 100px; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, p, ul { margin: 0; }
+ul { padding: 0; list-style: none; }
+a { color: var(--accent); }
+
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+code {
+  font-size: 0.875em;
+  background: var(--accent-tint);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: 32px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.nowrap { white-space: nowrap; }
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  background: var(--text);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  z-index: 100;
+  text-decoration: none;
+}
+.skip-link:focus { top: 12px; }
+
+/* ---------- Navbar ---------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px;
+}
+
+/* The logo is only shown on small screens, next to the Menu button */
+.logo {
+  display: none;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.5rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.site-nav ul {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.site-nav a {
+  display: block;
+  padding: 10px 18px;
+  border-radius: 9px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #4F625E;
+  text-decoration: none;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.site-nav a:hover { color: var(--accent); background: var(--accent-tint); }
+.site-nav a.is-active,
+.site-nav a.is-active:hover { color: #FFFFFF; background: var(--accent); }
+
+.menu-toggle {
+  display: none;
+  font: 700 1rem var(--sans);
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .header-inner {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    min-height: 0;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    row-gap: 12px;
+  }
+  .logo { display: block; }
+  .site-nav { width: 100%; }
+  .site-nav ul { justify-content: flex-start; }
+
+  .js .menu-toggle { display: inline-block; }
+  .js .site-nav { display: none; }
+  .js .site-nav.is-open { display: block; }
+  .js .site-nav ul { flex-direction: column; align-items: stretch; gap: 4px; }
+}
+
+/* ---------- Hero ---------- */
+
+.eyebrow {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hero {
+  padding-top: clamp(56px, 8vw, 96px);
+  padding-bottom: clamp(40px, 5vw, 56px);
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(3.25rem, 8.5vw, 6.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  margin-top: 22px;
+}
+
+.hero-student {
+  margin-top: 26px;
+  font-size: 1.3125rem;
+  color: var(--text);
+}
+
+.hero-desc {
+  margin-top: 26px;
+  max-width: 44em;
+  font-size: 1.375rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+/* ---------- Week cards ---------- */
+
+.weeks { padding-bottom: 96px; }
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.week-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 40px 40px 40px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.week-card:not(.is-soon):hover,
+.week-card:not(.is-soon):focus-within {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.week-label {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.week-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 2.6vw, 2.375rem);
+  line-height: 1.2;
+  margin-top: 26px;
+}
+
+.week-title a { color: var(--text); text-decoration: none; }
+/* The whole card is clickable through the title link */
+.week-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+}
+.week-title a:focus-visible { outline: none; }
+.week-title a:focus-visible::after { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.week-desc {
+  margin-top: 18px;
+  font-size: 1.1875rem;
+  color: var(--muted);
+  flex-grow: 1;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 32px;
+  padding: 14px 22px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #FFFFFF;
+  font-size: 1.1875rem;
+  font-weight: 800;
+  line-height: 1.3;
+  transition: background-color 0.15s ease;
+}
+.week-card:hover .btn { background: var(--accent-dark); }
+
+.btn.is-disabled {
+  background: #E6ECE9;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.week-card.is-soon { box-shadow: none; border-style: dashed; background: rgba(255,255,255,0.6); }
+.week-card.is-soon .week-label { color: var(--muted); }
+.week-card.is-soon .week-title { color: var(--muted); }
+
+@media (max-width: 760px) {
+  .wrap { padding-inline: 20px; }
+  .week-grid { grid-template-columns: 1fr; gap: 18px; }
+  .week-card { padding: 30px 26px; }
+  .hero-desc { font-size: 1.1875rem; }
+  .hero-student { font-size: 1.125rem; }
+  .btn { font-size: 1.0625rem; padding: 12px 20px; margin-top: 26px; }
+}
+
+/* ---------- Week landing pages ---------- */
+
+.week-page { padding-top: 40px; padding-bottom: 96px; }
+
+.back-link {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.back-link:hover { color: var(--accent); }
+
+.week-header { padding: 40px 0 48px; }
+.week-header h1 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-top: 18px;
+}
+
+.page-note { margin-top: 16px; font-size: 0.9375rem; color: var(--muted); }
+
+.task-group + .task-group { margin-top: 48px; }
+
+.group-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.75rem;
+  margin-bottom: 18px;
+}
+
+.task-list {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.task + .task { border-top: 1px solid var(--border); }
+
+.task-link {
+  display: grid;
+  grid-template-columns: 8rem 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 22px 32px;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+.task-link:hover { background: #F7FAF9; }
+.task-link:hover .task-open { background: var(--accent-dark); }
+.task-link:focus-visible { outline-offset: -3px; border-radius: 0; }
+
+.task-file { font-size: 0.875rem; font-weight: 600; color: var(--muted); }
+.task-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.task-title { font-weight: 800; font-size: 1.125rem; color: var(--text); }
+.task-desc { font-size: 1rem; color: var(--muted); }
+
+.task-open {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #FFFFFF;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  transition: background-color 0.15s ease;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--bg);
+  vertical-align: 2px;
+}
+.page-note .badge { margin-left: 0; }
+
+.file-note {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 24px;
+  padding: 20px 32px;
+  border: 1px dashed #CFDAD6;
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.folder-link { margin-top: 40px; font-size: 0.9375rem; }
+.folder-link a { color: var(--muted); }
+.folder-link a:hover { color: var(--accent); }
+
+@media (max-width: 600px) {
+  .task-link { grid-template-columns: 1fr auto; gap: 4px 16px; padding: 18px 20px; }
+  .task-file { grid-column: 1 / -1; }
+  .file-note { grid-template-columns: 1fr; gap: 6px; padding: 18px 20px; }
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer { border-top: 1px solid var(--border); background: #FFFFFF; }
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-top: 28px;
+  padding-bottom: 36px;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+.footer-inner a { color: var(--muted); }
+.footer-inner a:hover { color: var(--accent); }
+
+/* ---------- Motion preferences ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+  .week-card:not(.is-soon):hover,
+  .week-card:not(.is-soon):focus-within { transform: none; }
+}
+  </style>
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="index.html" aria-label="Aranjmaa Lkhamaa, portfolio home">AL.</a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <ul>
+        <li><a href="index.html" class="is-active" aria-current="page">Home</a></li>
+        <li><a href="week1">Week 1</a></li>
+        <li><a href="week2">Week 2</a></li>
+        <li><a href="week3">Week 3</a></li>
+        <li><a href="week4">Week 4</a></li>
+        <li><a href="week5">Week 5</a></li>
+        <li><a href="week6">Week 6</a></li>
+        <li><a href="index.html#week-7" class="is-soon">Week 7</a></li>
+        <li><a href="index.html#week-8" class="is-soon">Week 8</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero wrap">
+      <p class="eyebrow">Course portfolio</p>
+      <h1>Web Programming</h1>
+      <p class="hero-student">Aranjmaa Lkhamaa | <span class="nowrap">Student ID: 202637428</span></p>
+      <p class="hero-desc">A collection of my weekly assignments, exercises, and projects completed throughout the Web Programming course.</p>
+    </section>
+    <section class="weeks wrap" aria-labelledby="weeks-heading">
+      <h2 id="weeks-heading" class="visually-hidden">Weekly assignments</h2>
+      <ul class="week-grid">
+        <li class="week-card" id="week-1">
+          <p class="week-label">Week 1</p>
+          <h3 class="week-title"><a href="weeks/week-1.html">HTML Foundations</a></h3>
+          <p class="week-desc">First pages in HTML: headings, paragraphs, lists, links and images, plus finding and fixing broken markup.</p>
+          <span class="btn" aria-hidden="true">Open week →</span>
+        </li>
+        <li class="week-card" id="week-2">
+          <p class="week-label">Week 2</p>
+          <h3 class="week-title"><a href="weeks/week-2.html">Semantic HTML</a></h3>
+          <p class="week-desc">Structuring real pages with semantic elements: a blog, an article, an FAQ, a news story and a first personal portfolio.</p>
+          <span class="btn" aria-hidden="true">Open week →</span>
+        </li>
+        <li class="week-card" id="week-3">
+          <p class="week-label">Week 3</p>
+          <h3 class="week-title"><a href="weeks/week-3.html">CSS Fundamentals and Advanced CSS</a></h3>
+          <p class="week-desc">Styling with CSS: the box model, Flexbox navigation, positioning, transitions, keyframe animation, variables and responsive grids.</p>
+          <span class="btn" aria-hidden="true">Open week →</span>
+        </li>
+        <li class="week-card" id="week-4">
+          <p class="week-label">Week 4</p>
+          <h3 class="week-title"><a href="weeks/week-4.html">DOM Manipulation</a></h3>
+          <p class="week-desc">Selecting elements and responding to events with JavaScript: counters, class toggles, a to-do list and live search.</p>
+          <span class="btn" aria-hidden="true">Open week →</span>
+        </li>
+        <li class="week-card" id="week-5">
+          <p class="week-label">Week 5</p>
+          <h3 class="week-title"><a href="weeks/week-5.html">JavaScript Basics</a></h3>
+          <p class="week-desc">Core JavaScript connected to buttons: conditions, a counter, loops and updating text from an input.</p>
+          <span class="btn" aria-hidden="true">Open week →</span>
+        </li>
+        <li class="week-card" id="week-6">
+          <p class="week-label">Week 6</p>
+          <h3 class="week-title"><a href="weeks/week-6.html">Random Joke Fetcher</a></h3>
+          <p class="week-desc">Loads a random joke from the Official Joke API with fetch and async/await, shows a clear error when the request fails, and keeps favourites in localStorage.</p>
+          <span class="btn" aria-hidden="true">Open week →</span>
+        </li>
+        <li class="week-card is-soon" id="week-7">
+          <p class="week-label">Week 7</p>
+          <h3 class="week-title">Coming soon</h3>
+          <p class="week-desc">This assignment hasn’t been published yet. It will appear here once it’s added to the repository.</p>
+          <span class="btn is-disabled">Not available yet</span>
+        </li>
+        <li class="week-card is-soon" id="week-8">
+          <p class="week-label">Week 8</p>
+          <h3 class="week-title">Coming soon</h3>
+          <p class="week-desc">This assignment hasn’t been published yet. It will appear here once it’s added to the repository.</p>
+          <span class="btn is-disabled">Not available yet</span>
+        </li>
+      </ul>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>Aranjmaa Lkhamaa, Student ID 202637428</p>
+      <p><a href="https://github.com/Lkhamaa552/Web-programming">Source on GitHub</a></p>
+    </div>
+  </footer>
+  <script>
+// Mobile navigation toggle. Without JavaScript the menu simply stays open.
+(function () {
+  document.documentElement.classList.add('js');
+
+  var toggle = document.querySelector('.menu-toggle');
+  var nav = document.getElementById('site-nav');
+  if (!toggle || !nav) return;
+
+  function setOpen(open) {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.textContent = open ? 'Close' : 'Menu';
+  }
+
+  toggle.addEventListener('click', function () {
+    setOpen(!nav.classList.contains('is-open'));
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && nav.classList.contains('is-open')) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+
+  // Close the menu after choosing a link (e.g. #week-7 on the same page)
+  nav.addEventListener('click', function (e) {
+    if (e.target.closest('a')) setOpen(false);
+  });
+})();
+  </script>
+</body>
+</html>
