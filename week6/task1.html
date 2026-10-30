@@ -1,30 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Conditions</title></head>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Random Joke Fetcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e9ecfb;
+  --ink:#1b1f4b;
+  --muted:#58608f;
+  --setup-bg:#ffffff;
+  --punch-bg:#ffd23f;
+  --punch-ink:#2a2200;
+  --accent:#3b3fd8;
+  --accent-ink:#ffffff;
+  --line:#c5cbee;
+  --err-bg:#ffe3e0;
+  --err-ink:#7a1710;
+  --panel:#f6f7fe;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14173a;
+    --ink:#eceeff;
+    --muted:#a2a9d8;
+    --setup-bg:#222759;
+    --punch-bg:#ffd23f;
+    --punch-ink:#2a2200;
+    --accent:#8c90ff;
+    --accent-ink:#10133a;
+    --line:#343b7c;
+    --err-bg:#4a1b1b;
+    --err-ink:#ffc9c3;
+    --panel:#1b1f4b;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  line-height:1.6;
+  padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);
+}
+main{max-width:640px;margin:0 auto;padding:48px 20px 64px}
+h1{
+  font-family:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  font-weight:800;
+  font-size:clamp(2.2rem,8vw,3.4rem);
+  line-height:1.05;
+  letter-spacing:-.02em;
+  margin-bottom:10px;
+}
+.lede{color:var(--muted);margin-bottom:32px;max-width:46ch}
+
+.controls{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px}
+button{
+  font:inherit;font-weight:600;
+  border-radius:12px;
+  padding:12px 22px;
+  cursor:pointer;
+  border:2px solid var(--accent);
+  transition:transform .12s ease, background .12s ease;
+}
+button:focus-visible{outline:3px solid var(--punch-bg);outline-offset:3px}
+button:active:not(:disabled){transform:translateY(1px)}
+button:disabled{opacity:.55;cursor:not-allowed}
+#loadBtn{background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;gap:10px}
+#saveBtn{background:transparent;color:var(--accent)}
+
+.spinner{
+  width:16px;height:16px;border-radius:50%;
+  border:3px solid currentColor;border-right-color:transparent;
+  display:none;animation:spin .7s linear infinite;
+}
+.is-loading .spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+
+.stage{min-height:200px;margin-bottom:12px}
+.status{color:var(--muted);font-weight:500;padding:14px 0}
+.bubble{
+  padding:20px 24px;
+  border-radius:22px;
+  max-width:92%;
+  font-size:1.15rem;
+}
+.setup{
+  background:var(--setup-bg);
+  border:2px solid var(--line);
+  border-bottom-left-radius:6px;
+}
+.punch{
+  background:var(--punch-bg);
+  color:var(--punch-ink);
+  font-family:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  font-weight:800;
+  font-size:1.4rem;
+  line-height:1.25;
+  margin:14px 0 0 auto;
+  border-bottom-right-radius:6px;
+  animation:pop .35s ease-out;
+}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+.error{
+  background:var(--err-bg);color:var(--err-ink);
+  border-radius:14px;padding:16px 20px;
+  border-left:5px solid currentColor;
+}
+.error strong{display:block;margin-bottom:2px}
+.note{color:var(--muted);font-size:.9rem;min-height:1.4em;margin-bottom:36px}
+
+.favs{border-top:2px solid var(--line);padding-top:24px}
+.favs-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px}
+h2{font-family:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;font-size:1.4rem;font-weight:800}
+.link-btn{background:none;border:none;color:var(--muted);padding:4px 0;text-decoration:underline;font-weight:500}
+.fav-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.fav-list li{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px 16px;
+  display:flex;justify-content:space-between;gap:12px;align-items:flex-start;
+}
+.fav-list .q{font-weight:600}
+.fav-list .a{color:var(--muted)}
+.fav-list button{padding:4px 10px;font-size:.85rem;border-width:1px;background:transparent;color:var(--muted);border-color:var(--line)}
+.empty{color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){
+  .spinner{animation-duration:2s}
+  .punch{animation:none}
+}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
 <body>
-  <h2>Grade Checker</h2>
-  <label>Score (0-100): <input type="number" id="score" value="75" min="0" max="100"></label>
-  <button onclick="checkGrade()">Check Grade</button>
-  <h3>Grade: <span id="result">-</span></h3>
+<main>
+  <h1>Random Joke Fetcher</h1>
+  <p class="lede">Press the button and the page asks a joke server for a new one. No page reload.</p>
 
-  <script>
-    function checkGrade() {
-      let score = Number(document.getElementById('score').value);
-      let grade;
+  <div class="controls">
+    <button id="loadBtn" type="button"><span class="spinner" aria-hidden="true"></span><span id="loadLabel">Load Joke</span></button>
+    <button id="saveBtn" type="button" disabled>Save Favourite</button>
+  </div>
 
-      if (score >= 90) {
-        grade = 'A';
-      } else if (score >= 80) {
-        grade = 'B';
-      } else if (score >= 70) {
-        grade = 'C';
-      } else {
-        grade = 'F';
-      }
+  <div class="stage" id="stage" aria-live="polite">
+    <p class="status">No joke yet. Press “Load Joke”.</p>
+  </div>
+  <p class="note" id="note" role="status"></p>
 
-      console.log(grade);
-      document.getElementById('result').textContent = grade;
-    }
-  </script>
+  <section class="favs" aria-labelledby="favTitle">
+    <div class="favs-head">
+      <h2 id="favTitle">Favourite jokes</h2>
+      <button class="link-btn" id="clearBtn" type="button" hidden>Clear all</button>
+    </div>
+    <ul class="fav-list" id="favList"></ul>
+    <p class="empty" id="favEmpty">Saved jokes will appear here.</p>
+  </section>
+</main>
+
+<script>
+const API_URL = 'https://official-joke-api.appspot.com/random_joke';
+const STORAGE_KEY = 'week6-favourite-jokes';
+
+const loadBtn   = document.getElementById('loadBtn');
+const loadLabel = document.getElementById('loadLabel');
+const saveBtn   = document.getElementById('saveBtn');
+const clearBtn  = document.getElementById('clearBtn');
+const stage     = document.getElementById('stage');
+const note      = document.getElementById('note');
+const favList   = document.getElementById('favList');
+const favEmpty  = document.getElementById('favEmpty');
+
+let currentJoke = null;
+
+async function loadJoke() {
+  loadBtn.disabled = true;
+  loadBtn.classList.add('is-loading');
+  loadLabel.textContent = 'Loading…';
+  saveBtn.disabled = true;
+  note.textContent = '';
+  stage.innerHTML = '<p class="status">Loading…</p>';
+
+  try {
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error('Server answered with status ' + res.status);
+    const data = await res.json();
+    if (!data.setup || !data.punchline) throw new Error('Joke data was incomplete');
+
+    currentJoke = { id: data.id, setup: data.setup, punchline: data.punchline };
+    showJoke(currentJoke);
+    saveBtn.disabled = false;
+    saveBtn.textContent = isSaved(currentJoke) ? 'Saved ✓' : 'Save Favourite';
+    saveBtn.disabled = isSaved(currentJoke);
+  } catch (err) {
+    currentJoke = null;
+    showError(err);
+  } finally {
+    loadBtn.disabled = false;
+    loadBtn.classList.remove('is-loading');
+    loadLabel.textContent = 'Load Another Joke';
+  }
+}
+
+function showJoke(joke) {
+  stage.innerHTML = '';
+  const setup = document.createElement('p');
+  setup.className = 'bubble setup';
+  setup.textContent = joke.setup;
+  const punch = document.createElement('p');
+  punch.className = 'bubble punch';
+  punch.textContent = joke.punchline;
+  stage.append(setup, punch);
+}
+
+function showError(err) {
+  console.error(err);
+  stage.innerHTML = '';
+  const box = document.createElement('div');
+  box.className = 'error';
+  box.setAttribute('role', 'alert');
+  const title = document.createElement('strong');
+  title.textContent = 'Could not load a joke.';
+  const body = document.createElement('span');
+  body.textContent = 'Check your internet connection and press “Load Joke” to try again.';
+  box.append(title, body);
+  stage.append(box);
+  saveBtn.textContent = 'Save Favourite';
+}
+
+function readFavs() {
+  try {
+    const list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    return Array.isArray(list) ? list : [];
+  } catch (e) { return []; }
+}
+function writeFavs(list) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); return true; }
+  catch (e) { return false; }
+}
+function sameJoke(a, b) { return a.setup === b.setup && a.punchline === b.punchline; }
+function isSaved(joke) { return readFavs().some(f => sameJoke(f, joke)); }
+
+function saveFavourite() {
+  if (!currentJoke || isSaved(currentJoke)) return;
+  const list = readFavs();
+  list.unshift(currentJoke);
+  if (writeFavs(list)) {
+    saveBtn.textContent = 'Saved ✓';
+    saveBtn.disabled = true;
+    note.textContent = '';
+  } else {
+    note.textContent = 'Your browser blocked saving, so this joke was not stored.';
+  }
+  renderFavs();
+}
+
+function removeFavourite(index) {
+  const list = readFavs();
+  list.splice(index, 1);
+  writeFavs(list);
+  renderFavs();
+  if (currentJoke && !isSaved(currentJoke)) {
+    saveBtn.textContent = 'Save Favourite';
+    saveBtn.disabled = false;
+  }
+}
+
+function renderFavs() {
+  const list = readFavs();
+  favList.innerHTML = '';
+  favEmpty.hidden = list.length > 0;
+  clearBtn.hidden = list.length === 0;
+  list.forEach((joke, i) => {
+    const li = document.createElement('li');
+    const text = document.createElement('div');
+    const q = document.createElement('div');
+    q.className = 'q'; q.textContent = joke.setup;
+    const a = document.createElement('div');
+    a.className = 'a'; a.textContent = joke.punchline;
+    text.append(q, a);
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.textContent = 'Remove';
+    del.setAttribute('aria-label', 'Remove joke: ' + joke.setup);
+    del.addEventListener('click', () => removeFavourite(i));
+    li.append(text, del);
+    favList.append(li);
+  });
+}
+
+loadBtn.addEventListener('click', loadJoke);
+saveBtn.addEventListener('click', saveFavourite);
+clearBtn.addEventListener('click', () => {
+  writeFavs([]);
+  renderFavs();
+  if (currentJoke) { saveBtn.textContent = 'Save Favourite'; saveBtn.disabled = false; }
+});
+
+renderFavs();
+</script>
 </body>
 </html>
