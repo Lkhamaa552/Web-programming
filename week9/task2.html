@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 9 - Task 2</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 850px;
+      margin: 40px auto;
+      padding: 20px;
+      color: #252525;
+      background: #fff;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    .card {
+      padding: 20px;
+      margin: 20px 0;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+    }
+
+    .image {
+      font-size: 55px;
+      margin: 10px 0;
+    }
+
+    button {
+      background: #246bce;
+      color: white;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:focus-visible {
+      outline: 3px solid orange;
+      outline-offset: 4px;
+    }
+
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      background: #f0f4f8;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Image Alt Text Checker</h1>
+
+  <p>
+    Images need appropriate alternative text
+    to make websites accessible.
+  </p>
+
+  <div class="card">
+    <h2>1. Informative Image</h2>
+    <div class="image" role="img"
+         aria-label="School building">🏫</div>
+    <p>Alt text: "School building"</p>
+  </div>
+
+  <div class="card">
+    <h2>2. Decorative Image</h2>
+    <div class="image" aria-hidden="true">〰️</div>
+    <p>This image is decorative and does not need
+       a text description.</p>
+  </div>
+
+  <div class="card">
+    <h2>3. Informative Image</h2>
+    <div class="image" role="img"
+         aria-label="School building">🏫</div>
+    <p>Alt text: "School building"</p>
+  </div>
+
+  <div class="card">
+    <h2>4. Data Image</h2>
+    <div class="image" role="img"
+         aria-label="Bar chart showing statistics">📊</div>
+    <p>Alt text: "Bar chart showing statistics"</p>
+  </div>
+
+  <button type="button" id="checkBtn">
+    Check my alt text
+  </button>
+
+  <div id="result" role="status" aria-live="polite">
+    Your results will appear here.
+  </div>
+
+  <script>
+    const checkBtn = document.getElementById("checkBtn");
+    const result = document.getElementById("result");
+
+    checkBtn.addEventListener("click", function() {
+      const images = document.querySelectorAll('[role="img"]');
+
+      let count = 0;
+
+      images.forEach(function(image) {
+        const altText = image.getAttribute("aria-label");
+
+        if (altText && altText.trim() !== "") {
+          count++;
+        }
+      });
+
+      result.textContent =
+        "Accessibility check complete! " +
+        count + " informative images have text descriptions.";
+    });
+  </script>
+
+</body>
+</html>
