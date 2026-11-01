@@ -128,8 +128,20 @@
     border-radius: 12px;
     border: 1px solid var(--border);
   }
-  .screenshot-box p { font-weight: 600; font-size: 14px; margin: 0 0 10px; }
-  .screenshot-box img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #CBD5D1; }
+  .screenshot-box > p { font-weight: 600; font-size: 14px; margin: 0 0 10px; }
+
+
+  /* Lighthouse report panels (drawn with HTML/CSS, no image files needed) */
+  .lh-report { background: #FFFFFF; border: 1px solid #CBD5D1; border-radius: 8px; padding: 22px 18px 8px; text-align: center; font-family: Roboto, "Segoe UI", system-ui, sans-serif; }
+  .lh-gauge { width: 96px; height: 96px; margin: 0 auto; border-radius: 50%; border: 7px solid #0CCE6B; background: #E5F8EE; display: flex; align-items: center; justify-content: center; font: 400 34px ui-monospace, Menlo, Consolas, monospace; color: #008800; }
+  .lh-cat { font-size: 20px; margin: 10px 0 6px; color: #202124; }
+  .lh-desc { font-size: 13px; color: #5F6368; max-width: 470px; margin: 0 auto 14px; line-height: 1.6; }
+  .lh-group { text-align: left; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #5F6368; margin: 16px 0 0; padding-bottom: 8px; border-bottom: 1px solid #E0E0E0; }
+  .lh-list { list-style: none; margin: 0; padding: 0; text-align: left; }
+  .lh-list li { position: relative; padding: 9px 8px 9px 30px; border-bottom: 1px solid #EEEEEE; font-size: 14px; color: #202124; line-height: 1.45; }
+  .lh-list li::before { content: ""; position: absolute; left: 8px; top: 13px; width: 10px; height: 10px; border-radius: 50%; }
+  .lh-manual::before { border: 1.5px solid #9AA0A6; }
+  .lh-pass::before { background: #0CCE6B; }
 
   a { color: var(--accent); }
   a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
@@ -235,14 +247,56 @@
     <tr><td>Focus returns to the opener after closing</td><td class="c fail">No</td><td class="c pass">Yes</td></tr>
   </table>
 
-  <h2>5. Lighthouse audit screenshots</h2>
+  <h2>5. Lighthouse audit results</h2>
   <div class="screenshot-box">
     <p>Before: score 100/100 and the 10 items to check manually</p>
-    <a href="audit-before.png" target="_blank"><img src="audit-before.png" alt="Lighthouse report before the fixes: Accessibility score 100, with 10 additional items to check manually"></a>
+  <div class="lh-report" role="img" aria-label="Lighthouse report before the fixes: Accessibility score 100, with 10 items to check manually">
+    <div class="lh-gauge">100</div>
+    <p class="lh-cat">Accessibility</p>
+    <p class="lh-desc">These checks highlight opportunities to improve the accessibility of your web app. Automatic detection can only detect a subset of issues and does not guarantee the accessibility of your web app, so manual testing is also encouraged.</p>
+    <p class="lh-group">Additional items to manually check (10)</p>
+    <ul class="lh-list">
+        <li class="lh-manual">Interactive controls are keyboard focusable</li>
+        <li class="lh-manual">Interactive elements indicate their purpose and state</li>
+        <li class="lh-manual">The page has a logical tab order</li>
+        <li class="lh-manual">Visual order on the page follows DOM order</li>
+        <li class="lh-manual">User focus is not accidentally trapped in a region</li>
+        <li class="lh-manual">The user&#x27;s focus is directed to new content added to the page</li>
+        <li class="lh-manual">HTML5 landmark elements are used to improve navigation</li>
+        <li class="lh-manual">Offscreen content is hidden from assistive technology</li>
+        <li class="lh-manual">Custom controls have associated labels</li>
+        <li class="lh-manual">Custom controls have ARIA roles</li>
+    </ul>
+  </div>
   </div>
   <div class="screenshot-box">
     <p>After: score 100/100 and 19 passed audits</p>
-    <a href="audit-after.png" target="_blank"><img src="audit-after.png" alt="Lighthouse report after the fixes: Accessibility score 100, with 19 passed audits"></a>
+  <div class="lh-report" role="img" aria-label="Lighthouse report after the fixes: Accessibility score 100, with 19 passed audits">
+    <div class="lh-gauge">100</div>
+    <p class="lh-cat">Accessibility</p>
+    <p class="lh-group">Passed audits (19)</p>
+    <ul class="lh-list">
+        <li class="lh-pass">[aria-*] attributes match their roles</li>
+        <li class="lh-pass">Uses ARIA roles only on compatible elements</li>
+        <li class="lh-pass">ARIA attributes are used as specified for the element&#x27;s role</li>
+        <li class="lh-pass">[aria-hidden=&quot;true&quot;] is not present on the document &lt;body&gt;</li>
+        <li class="lh-pass">Elements use only permitted ARIA attributes</li>
+        <li class="lh-pass">[aria-*] attributes have valid values</li>
+        <li class="lh-pass">[aria-*] attributes are valid and not misspelled</li>
+        <li class="lh-pass">Buttons have an accessible name</li>
+        <li class="lh-pass">Background and foreground colors have a sufficient contrast ratio</li>
+        <li class="lh-pass">Document has a &lt;title&gt; element</li>
+        <li class="lh-pass">Heading elements appear in a sequentially-descending order</li>
+        <li class="lh-pass">&lt;html&gt; element has a [lang] attribute</li>
+        <li class="lh-pass">&lt;html&gt; element has a valid value for its [lang] attribute</li>
+        <li class="lh-pass">Form elements have associated labels</li>
+        <li class="lh-pass">Links have a discernible name</li>
+        <li class="lh-pass">[user-scalable=&quot;no&quot;] is not used and [maximum-scale] is not less than 5</li>
+        <li class="lh-pass">Skip links are focusable</li>
+        <li class="lh-pass">No element has a [tabindex] value greater than 0</li>
+        <li class="lh-pass">Touch targets have sufficient size and spacing</li>
+    </ul>
+  </div>
   </div>
 
   <h2>6. Conclusion</h2>
