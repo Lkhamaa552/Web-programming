@@ -210,3 +210,628 @@ a:focus-visible, button:focus-visible {
 .weeks { padding-bottom: 96px; }
 
 .week-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.week-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 40px 40px 40px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.week-card:not(.is-soon):hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.week-label {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.week-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 2.6vw, 2.375rem);
+  line-height: 1.2;
+  margin-top: 26px;
+}
+
+.week-title a { color: var(--text); text-decoration: none; }
+/* The whole card is clickable through the title link */
+.week-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+}
+.week-title a:focus-visible { outline: none; }
+.week-title a:focus-visible::after { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.week-desc {
+  margin-top: 18px;
+  font-size: 1.1875rem;
+  color: var(--muted);
+  flex-grow: 1;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 32px;
+  padding: 14px 22px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #FFFFFF;
+  font-size: 1.1875rem;
+  font-weight: 800;
+  line-height: 1.3;
+  transition: background-color 0.15s ease;
+}
+.week-card:hover .btn { background: var(--accent-dark); }
+
+.btn.is-disabled {
+  background: #E6ECE9;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.week-card.is-soon { box-shadow: none; border-style: dashed; background: rgba(255,255,255,0.6); }
+.week-card.is-soon .week-label { color: var(--muted); }
+.week-card.is-soon .week-title { color: var(--muted); }
+
+@media (max-width: 760px) {
+  .wrap { padding-inline: 20px; }
+  .week-grid { grid-template-columns: 1fr; gap: 18px; }
+  .week-card { padding: 30px 26px; }
+  .hero-desc { font-size: 1.1875rem; }
+  .hero-student { font-size: 1.125rem; }
+  .btn { font-size: 1.0625rem; padding: 12px 20px; margin-top: 26px; }
+}
+
+/* ---------- Task links inside cards ---------- */
+
+.week-card { justify-content: flex-start; }
+.week-card .week-desc { flex-grow: 0; }
+.week-card.is-wide { grid-column: 1 / -1; }
+
+.week-tag {
+  margin-top: 14px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.chip-group {
+  margin-top: 26px;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.task-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.chip-group + .task-chips { margin-top: 12px; }
+
+.task-chip {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-decoration: none;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.task-chip:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+/* ---------- Footer ---------- */
+
+.site-footer { border-top: 1px solid var(--border); background: #FFFFFF; }
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-top: 28px;
+  padding-bottom: 36px;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+.footer-inner a { color: var(--muted); }
+.footer-inner a:hover { color: var(--accent); }
+
+/* ---------- Motion preferences ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+  .week-card:not(.is-soon):hover,
+  .week-card:not(.is-soon):focus-within { transform: none; }
+}
+
+/* ---------- Task preview window ---------- */
+
+.preview {
+  width: min(1200px, 94vw);
+  height: min(860px, 90vh);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 30px 80px rgba(23, 43, 42, 0.25);
+  overflow: hidden;
+  background: var(--card);
+  color: var(--text);
+}
+.preview[open] { display: flex; flex-direction: column; }
+.preview::backdrop { background: rgba(23, 43, 42, 0.45); }
+
+.preview-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.preview-title {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.preview-open,
+.preview-close {
+  font: 700 0.9375rem var(--sans);
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.preview-open { color: var(--accent); border: 1px solid var(--border); background: #FFFFFF; }
+.preview-open:hover { background: var(--accent-tint); }
+.preview-close { color: #FFFFFF; background: var(--accent); border: none; }
+.preview-close:hover { background: var(--accent-dark); }
+
+.preview-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: #FFFFFF;
+}
+
+body.preview-on { overflow: hidden; }
+
+@media (max-width: 600px) {
+  .preview { width: 100vw; height: 100dvh; max-width: none; max-height: none; border-radius: 0; }
+  .preview-bar { padding: 10px 12px; }
+  .preview-title { font-size: 1rem; }
+  .preview-open { display: none; }
+}
+
+/* ---------- Group project (LifeOS) ---------- */
+
+.group { padding-bottom: 28px; }
+
+.group-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.group-media { background: #000000; min-width: 0; overflow: hidden; display: flex; align-items: center; }
+.group-video { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000000; }
+
+.group-body { padding: 40px; }
+
+.group-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  line-height: 1.1;
+  margin-top: 18px;
+}
+
+.group-tagline {
+  margin-top: 6px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.members {
+  margin-top: 10px;
+  display: grid;
+  gap: 4px;
+  font-weight: 700;
+}
+.members span { font-weight: 400; color: var(--muted); margin-left: 6px; }
+
+.group-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.group-actions .btn { text-decoration: none; font-size: 1rem; padding: 12px 18px; }
+.group-actions .btn:hover { background: var(--accent-dark); }
+.btn-ghost { background: #FFFFFF; color: var(--accent); border: 1px solid var(--border); }
+.group-actions .btn-ghost:hover { background: var(--accent-tint); }
+
+@media (max-width: 900px) {
+  .group-card { grid-template-columns: 1fr; }
+  .group-body { padding: 28px 24px; }
+}
+  </style>
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="index.html" aria-label="Aranjmaa Lkhamaa, portfolio home">AL.</a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <ul>
+        <li><a href="#top" class="is-active" aria-current="page">Home</a></li>
+        <li><a href="#group-project">Group Project</a></li>
+        <li><a href="#week-2">Week 2</a></li>
+        <li><a href="#week-3">Week 3</a></li>
+        <li><a href="#week-4">Week 4</a></li>
+        <li><a href="#week-5">Week 5</a></li>
+        <li><a href="#week-6">Week 6</a></li>
+        <li><a href="#week-7">Week 7</a></li>
+        <li><a href="#week-8">Week 8</a></li>
+        <li><a href="#week-9">Week 9</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero wrap">
+      <p class="eyebrow">Course portfolio</p>
+      <h1>Web Programming</h1>
+      <p class="hero-student">Aranjmaa Lkhamaa | <span class="nowrap">Student ID: 202637428</span></p>
+      <p class="hero-desc">A collection of my weekly assignments, exercises, and projects completed throughout the Web Programming course.</p>
+    </section>
+    <section class="group wrap" id="group-project" aria-labelledby="group-title">
+      <div class="group-card">
+        <div class="group-media">
+          <iframe class="group-video" src="https://drive.google.com/file/d/1gCIGlR9N0u58BnqyNcpjSB4yva7yyDRN/preview" title="LifeOS project video" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="group-body">
+          <p class="week-label">Group project · Team 9</p>
+          <h2 class="group-title" id="group-title">LifeOS</h2>
+          <p class="group-tagline">Everyday-life management, all in one place.</p>
+          <p class="week-desc">A team-built web app that helps you stay organized, save money and avoid unnecessary stress: an overview of your life, a life plan, and a quick way to add new items, all saved in the browser.</p>
+          <p class="chip-group">Team members</p>
+          <ul class="members">
+            <li>Otgonjargal Murun <span>202539440</span></li>
+            <li>Anand <span>202539455</span></li>
+            <li>Lkhamaa <span>202637428</span></li>
+          </ul>
+          <div class="group-actions">
+            <a class="btn" href="lifeos.html" target="_blank">Open LifeOS website ↗</a>
+            <a class="btn btn-ghost" href="https://drive.google.com/drive/folders/1pykMmDwcbq_IxctjuRzgpwywaZWCl6Bq?usp=drive_link" target="_blank" rel="noopener">Google Drive folder ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="weeks wrap" aria-labelledby="weeks-heading">
+      <h2 id="weeks-heading" class="visually-hidden">Weekly assignments</h2>
+      <ul class="week-grid">
+        <li class="week-card" id="week-1">
+          <p class="week-label">Week 1</p>
+          <h3 class="week-title">HTML Foundations</h3>
+          <p class="week-desc">First pages in HTML: headings, paragraphs, lists, links and images, plus finding and fixing broken markup.</p>
+          <ul class="task-chips">
+            <li><a class="task-chip" href="week1/task1.html" data-task="week1/task1.html" data-title="Week 1 · My First Page" title="A first HTML page with a greeting to Gachon.">My First Page</a></li>
+            <li><a class="task-chip" href="week1/task2.html" data-task="week1/task2.html" data-title="Week 1 · My Hobby" title="A page about reading, organised with headings and sections.">My Hobby</a></li>
+            <li><a class="task-chip" href="week1/task3.html" data-task="week1/task3.html" data-title="Week 1 · My Favourite Places" title="A list of navigation links to favourite places.">My Favourite Places</a></li>
+            <li><a class="task-chip" href="week1/task4.html" data-task="week1/task4.html" data-title="Week 1 · My Campus Photo" title="Adding a campus photo with the image element.">My Campus Photo</a></li>
+            <li><a class="task-chip" href="week1/task5.html" data-task="week1/task5.html" data-title="Week 1 · About Me" title="A short personal introduction with a list of skills.">About Me</a></li>
+            <li><a class="task-chip" href="week1/task6.html" data-task="week1/task6.html" data-title="Week 1 · Fixed Page" title="Correcting unclosed and mismatched tags in a small blog page.">Fixed Page</a></li>
+            <li><a class="task-chip" href="week1/task7.html" data-task="week1/task7.html" data-title="Week 1 · Tteokgalbi Recipe" title="A recipe page with an ingredient list and ordered steps.">Tteokgalbi Recipe</a></li>
+            <li><a class="task-chip" href="week1/task8.html" data-task="week1/task8.html" data-title="Week 1 · My Favourites" title="Favourite book and film, each in its own section.">My Favourites</a></li>
+          </ul>
+        </li>
+        <li class="week-card" id="week-2">
+          <p class="week-label">Week 2</p>
+          <h3 class="week-title">Semantic HTML</h3>
+          <p class="week-desc">Structuring real pages with semantic elements: a blog, an article, an FAQ, a news story and a first personal portfolio.</p>
+          <ul class="task-chips">
+            <li><a class="task-chip" href="week2/task1.html" data-task="week2/task1.html" data-title="Week 2 · Gachon Blog" title="A blog homepage with a first post and a list of recent posts.">Gachon Blog</a></li>
+            <li><a class="task-chip" href="week2/task2.html" data-task="week2/task2.html" data-title="Week 2 · Blog Post" title="An article on why I am interested in finance.">Blog Post</a></li>
+            <li><a class="task-chip" href="week2/task3.html" data-task="week2/task3.html" data-title="Week 2 · Finance Guide" title="A finance page with a figure, caption, date and code sample.">Finance Guide</a></li>
+            <li><a class="task-chip" href="week2/task4.html" data-task="week2/task4.html" data-title="Week 2 · Web Programming FAQ" title="Expandable questions and answers built with details and summary.">Web Programming FAQ</a></li>
+            <li><a class="task-chip" href="week2/task5.html" data-task="week2/task5.html" data-title="Week 2 · Portfolio" title="An about-me section and a list of projects.">Portfolio</a></li>
+            <li><a class="task-chip" href="week2/task6.html" data-task="week2/task6.html" data-title="Week 2 · My Blog" title="A semantic blog layout with a list of topics.">My Blog</a></li>
+            <li><a class="task-chip" href="week2/task7.html" data-task="week2/task7.html" data-title="Week 2 · Inspirational Quotes" title="Quotations marked up with blockquote and citations.">Inspirational Quotes</a></li>
+            <li><a class="task-chip" href="week2/task8.html" data-task="week2/task8.html" data-title="Week 2 · Technology News" title="A news article on how AI is changing web development.">Technology News</a></li>
+          </ul>
+        </li>
+        <li class="week-card is-wide" id="week-3">
+          <p class="week-label">Week 3</p>
+          <h3 class="week-title">CSS Fundamentals and Advanced CSS</h3>
+          <p class="week-desc">Styling with CSS: the box model, Flexbox navigation, positioning, transitions, keyframe animation, variables and responsive grids.</p>
+          <p class="chip-group">CSS basics</p>
+          <ul class="task-chips">
+            <li><a class="task-chip" href="week3/task1_1.html" data-task="week3/task1_1.html" data-title="Week 3 · CSS is Beautiful" title="Styling a heading and a paragraph with type selectors.">CSS is Beautiful</a></li>
+            <li><a class="task-chip" href="week3/task1_2.html" data-task="week3/task1_2.html" data-title="Week 3 · Internal and Inline CSS" title="Comparing a style block with inline styles.">Internal and Inline CSS</a></li>
+            <li><a class="task-chip" href="week3/task1_3.html" data-task="week3/task1_3.html" data-title="Week 3 · Colour Palette" title="A row of colour swatches laid out with Flexbox.">Colour Palette</a></li>
+            <li><a class="task-chip" href="week3/task1_4.html" data-task="week3/task1_4.html" data-title="Week 3 · Box Model" title="Nested layers showing margin, border, padding and content.">Box Model</a></li>
+            <li><a class="task-chip" href="week3/task1_5.html" data-task="week3/task1_5.html" data-title="Week 3 · Fix Me" title="Debugging a stylesheet with broken rules.">Fix Me</a></li>
+            <li><a class="task-chip" href="week3/task1_6.html" data-task="week3/task1_6.html" data-title="Week 3 · Navigation Bar" title="A Flexbox navigation bar with a hover colour.">Navigation Bar</a></li>
+            <li><a class="task-chip" href="week3/task1_7.html" data-task="week3/task1_7.html" data-title="Week 3 · Profile Card" title="A centred profile card with avatar and skill badges.">Profile Card</a></li>
+            <li><a class="task-chip" href="week3/task1_8.html" data-task="week3/task1_8.html" data-title="Week 3 · My CSS Portfolio" title="A small page combining the CSS basics.">My CSS Portfolio</a></li>
+          </ul>
+          <p class="chip-group">Advanced CSS</p>
+          <ul class="task-chips">
+            <li><a class="task-chip" href="week3/task2_1.html" data-task="week3/task2_1.html" data-title="Week 3 · Positioned Badge" title="An absolutely positioned badge inside a relative card.">Positioned Badge</a></li>
+            <li><a class="task-chip" href="week3/task2_2.html" data-task="week3/task2_2.html" data-title="Week 3 · Hover Card" title="A card that lifts on hover using transitions.">Hover Card</a></li>
+            <li><a class="task-chip" href="week3/task2_3.html" data-task="week3/task2_3.html" data-title="Week 3 · Loading Spinner" title="A spinner animated with @keyframes.">Loading Spinner</a></li>
+            <li><a class="task-chip" href="week3/task2_4.html" data-task="week3/task2_4.html" data-title="Week 3 · Variables and Dark Mode" title="CSS custom properties with a prefers-color-scheme theme.">Variables and Dark Mode</a></li>
+            <li><a class="task-chip" href="week3/task2_5.html" data-task="week3/task2_5.html" data-title="Week 3 · Fixed Navigation" title="A navigation bar that stays fixed over scrolling content.">Fixed Navigation</a></li>
+            <li><a class="task-chip" href="week3/task2_6.html" data-task="week3/task2_6.html" data-title="Week 3 · Responsive Skills Grid" title="A skills grid that changes columns with a media query.">Responsive Skills Grid</a></li>
+            <li><a class="task-chip" href="week3/task2_7.html" data-task="week3/task2_7.html" data-title="Week 3 · CSS Advanced Page" title="Final page bringing the advanced techniques together.">CSS Advanced Page</a></li>
+          </ul>
+        </li>
+        <li class="week-card" id="week-4">
+          <p class="week-label">Week 4</p>
+          <h3 class="week-title">DOM Manipulation</h3>
+          <p class="week-desc">Selecting elements and responding to events with JavaScript: counters, class toggles, a to-do list and live search.</p>
+          <ul class="task-chips">
+            <li><a class="task-chip" href="week4/task1.html" data-task="week4/task1.html" data-title="Week 4 · Click Counter" title="Counts clicks and changes the button after five.">Click Counter</a></li>
+            <li><a class="task-chip" href="week4/task2.html" data-task="week4/task2.html" data-title="Week 4 · Dark Mode Card" title="A profile card that switches theme with classList.toggle.">Dark Mode Card</a></li>
+            <li><a class="task-chip" href="week4/task3.html" data-task="week4/task3.html" data-title="Week 4 · To-Do List" title="Add tasks with a button or Enter, and remove them from the list.">To-Do List</a></li>
+            <li><a class="task-chip" href="week4/task4.html" data-task="week4/task4.html" data-title="Week 4 · Student Search" title="Filters a list of students as you type.">Student Search</a></li>
+          </ul>
+        </li>
+        <li class="week-card" id="week-5">
+          <p class="week-label">Week 5</p>
+          <h3 class="week-title">JavaScript Basics</h3>
+          <p class="week-desc">Core JavaScript connected to buttons: conditions, a counter, loops and updating text from an input.</p>
+          <ul class="task-chips">
+            <li><a class="task-chip" href="week5/task1.html" data-task="week5/task1.html" data-title="Week 5 · Grade Checker" title="Turns a score into a letter grade with if and else.">Grade Checker</a></li>
+            <li><a class="task-chip" href="week5/task2.html" data-task="week5/task2.html" data-title="Week 5 · Counter" title="Add, subtract and reset a number on the page.">Counter</a></li>
+            <li><a class="task-chip" href="week5/task3.html" data-task="week5/task3.html" data-title="Week 5 · Loops" title="Repeats with for and walks an array with for...of.">Loops</a></li>
+            <li><a class="task-chip" href="week5/task4.html" data-task="week5/task4.html" data-title="Week 5 · Change Text" title="Reads an input value and replaces a heading.">Change Text</a></li>
+          </ul>
+        </li>
+        <li class="week-card" id="week-6">
+          <p class="week-label">Week 6</p>
+          <h3 class="week-title">Random Joke Fetcher</h3>
+          <p class="week-desc">Loads a random joke from the Official Joke API with fetch and async/await, shows a clear error when the request fails, and keeps favourites in localStorage.</p>
+          <ul class="task-chips">
+            <li><a class="task-chip" href="week6/task1.html" data-task="week6/task1.html" data-title="Week 6 · Random Joke Fetcher" title="">Random Joke Fetcher</a></li>
+          </ul>
+        </li>
+        <li class="week-card" id="week-7">
+          <p class="week-label">Week 7</p>
+          <h3 class="week-title">Web Accessibility</h3>
+          <p class="week-desc">Making pages usable for everyone: visible keyboard focus, meaningful alt text, and clear labels on forms and buttons.</p>
+          <ul class="task-chips">
+            <li><a class="task-chip" href="week7/task1.html" data-task="week7/task1.html" data-title="Week 7 · Keyboard Focus" title="Buttons with a visible focus outline for keyboard users.">Keyboard Focus</a></li>
+            <li><a class="task-chip" href="week7/task2.html" data-task="week7/task2.html" data-title="Week 7 · Alt Text" title="Choosing informative or empty alt text for different images.">Alt Text</a></li>
+            <li><a class="task-chip" href="week7/task3.html" data-task="week7/task3.html" data-title="Week 7 · Sign Up Form Review" title="Labels, error messages and an icon button with an aria-label.">Sign Up Form Review</a></li>
+          </ul>
+        </li>
+        <li class="week-card" id="week-8">
+          <p class="week-label">Week 8</p>
+          <h3 class="week-title">HTML Forms and Validation</h3>
+          <p class="week-desc">Building forms with the right input types and the browser’s built-in validation.</p>
+          <ul class="task-chips">
+            <li><a class="task-chip" href="week8/task1.html" data-task="week8/task1.html" data-title="Week 8 · Sign In Form" title="Email, password and a remember-me checkbox.">Sign In Form</a></li>
+            <li><a class="task-chip" href="week8/task2.html" data-task="week8/task2.html" data-title="Week 8 · Registration Form" title="Student ID, email and password confirmation.">Registration Form</a></li>
+            <li><a class="task-chip" href="week8/task3.html" data-task="week8/task3.html" data-title="Week 8 · Validation Styles" title="Styling :valid and :invalid fields with required, minlength and number ranges.">Validation Styles</a></li>
+            <li><a class="task-chip" href="week8/homework.html" data-task="week8/homework.html" data-title="Week 8 · Student Registration (Homework)" title="A full registration form with dates, ranges, checkboxes and validation styles.">Student Registration (Homework)</a></li>
+          </ul>
+        </li>
+        <li class="week-card" id="week-9">
+          <p class="week-label">Week 9</p>
+          <h3 class="week-title">Accessible Interfaces</h3>
+          <p class="week-desc">Building pages that work for everyone: keyboard-friendly buttons, checking image alt text, and an accessible sign-up form with live error messages.</p>
+          <ul class="task-chips">
+            <li><a class="task-chip" href="week9/task1.html" data-task="week9/task1.html" data-title="Week 9 · Keyboard Access" title="Buttons that work with Tab and Enter, with a visible focus outline and an aria-label.">Keyboard Access</a></li>
+            <li><a class="task-chip" href="week9/task2.html" data-task="week9/task2.html" data-title="Week 9 · Image Alt Text Checker" title="Informative, decorative and data images with the right alt text.">Image Alt Text Checker</a></li>
+            <li><a class="task-chip" href="week9/task3.html" data-task="week9/task3.html" data-title="Week 9 · Accessible Sign Up Form" title="Labels, aria-describedby hints and aria-live error messages.">Accessible Sign Up Form</a></li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+  </main>
+  <dialog class="preview" id="preview" aria-labelledby="preview-title">
+    <div class="preview-bar">
+      <p class="preview-title" id="preview-title">Task</p>
+      <div class="preview-actions">
+        <a class="preview-open" id="preview-open" href="#" target="_blank" rel="noopener">Open in new tab ↗</a>
+        <button class="preview-close" id="preview-close" type="button">Close ✕</button>
+      </div>
+    </div>
+    <iframe class="preview-frame" id="preview-frame" title="Task result"></iframe>
+  </dialog>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>Aranjmaa Lkhamaa, Student ID 202637428</p>
+      <p><a href="https://github.com/Lkhamaa552/Web-programming">Source on GitHub</a></p>
+    </div>
+  </footer>
+  <script>
+// Mobile navigation toggle. Without JavaScript the menu simply stays open.
+(function () {
+  document.documentElement.classList.add('js');
+
+  var toggle = document.querySelector('.menu-toggle');
+  var nav = document.getElementById('site-nav');
+  if (!toggle || !nav) return;
+
+  function setOpen(open) {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.textContent = open ? 'Close' : 'Menu';
+  }
+
+  toggle.addEventListener('click', function () {
+    setOpen(!nav.classList.contains('is-open'));
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && nav.classList.contains('is-open')) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+
+  // Close the menu after choosing a link (e.g. #week-7 on the same page)
+  nav.addEventListener('click', function (e) {
+    if (e.target.closest('a')) setOpen(false);
+  });
+})();
+
+// Task preview: clicking a task shows its result in a window on this page.
+(function () {
+  var dialog = document.getElementById('preview');
+  if (!dialog || typeof dialog.showModal !== 'function') return;
+
+  var frame = document.getElementById('preview-frame');
+  var title = document.getElementById('preview-title');
+  var openLink = document.getElementById('preview-open');
+  var closeBtn = document.getElementById('preview-close');
+  var lastLink = null;
+
+  dialog.addEventListener('close', function () {
+    frame.src = 'about:blank';
+    document.body.classList.remove('preview-on');
+    if (lastLink) lastLink.focus();
+  });
+
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[data-task]');
+    if (!link) return;
+    e.preventDefault();
+    lastLink = link;
+    title.textContent = link.getAttribute('data-title');
+    openLink.href = link.getAttribute('href');
+    frame.src = link.getAttribute('href');
+    document.body.classList.add('preview-on');
+    dialog.showModal();
+    closeBtn.focus();
+  });
+
+  closeBtn.addEventListener('click', function () { dialog.close(); });
+
+  // Clicking the dark area outside the window closes it
+  dialog.addEventListener('click', function (e) {
+    if (e.target === dialog) dialog.close();
+  });
+})();
+
+// Auto-update: reads the list of files in the GitHub repository and adds any
+// new week folders (week10, week11 ...) or new task files to the page.
+// Upload a new folder to GitHub and it appears here, without editing this file.
+(function () {
+  var REPO = 'Lkhamaa552/Web-programming';
+  var BRANCH = 'main';
+  var grid = document.querySelector('.week-grid');
+  var navList = document.querySelector('#site-nav ul');
+  if (!grid || !window.fetch) return;
+
+  function label(file) {
+    var name = file.replace(/\.html?$/i, '').replace(/[-_]+/g, ' ');
+    name = name.replace(/([a-z])(\d)/gi, '$1 $2');
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  function makeChip(week, file) {
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    var path = 'week' + week + '/' + file;
+    a.className = 'task-chip';
+    a.href = path;
+    a.setAttribute('data-task', path);
+    a.setAttribute('data-title', 'Week ' + week + ' · ' + label(file));
+    a.textContent = label(file);
+    li.appendChild(a);
+    return li;
+  }
+
+  fetch('https://api.github.com/repos/' + REPO + '/git/trees/' + BRANCH + '?recursive=1')
+    .then(function (res) { return res.ok ? res.json() : null; })
+    .then(function (data) {
+      if (!data || !data.tree) return;
+
+      // Collect weekN/file.html (files with spaces in the name are skipped)
+      var weeks = {};
+      data.tree.forEach(function (item) {
+        var m = /^week(\d+)\/([^\/\s]+\.html?)$/i.exec(item.path);
+        if (item.type !== 'blob' || !m) return;
+        var n = Number(m[1]);
+        (weeks[n] = weeks[n] || []).push(m[2]);
+      });
+
+      Object.keys(weeks).map(Number).sort(function (a, b) { return a - b; }).forEach(function (n) {
+        var files = weeks[n].sort(function (a, b) {
+          return a.localeCompare(b, undefined, { numeric: true });
+        });
+        var card = document.getElementById('week-' + n);
+
+        if (card) {
+          // Existing week: add only the files that are not shown yet
+          var list = card.querySelector('.task-chips:last-of-type');
+          files.forEach(function (f) {
+            if (!card.querySelector('a[data-task="week' + n + '/' + f + '"]') && list) {
+              list.appendChild(makeChip(n, f));
+            }
+          });
+          return;
+        }
+
+        // New week: build a card and a menu link
+        card = document.createElement('li');
+        card.className = 'week-card';
+        card.id = 'week-' + n;
+        card.innerHTML =
+          '<p class="week-label">Week ' + n + '</p>' +
+          '<h3 class="week-title">Week ' + n + ' assignments</h3>' +
+          '<ul class="task-chips"></ul>';
+        var chips = card.querySelector('.task-chips');
+        files.forEach(function (f) { chips.appendChild(makeChip(n, f)); });
+        grid.appendChild(card);
+
+        if (navList && !navList.querySelector('a[href="#week-' + n + '"]')) {
+          var li = document.createElement('li');
+          li.innerHTML = '<a href="#week-' + n + '">Week ' + n + '</a>';
+          navList.appendChild(li);
+        }
+      });
+    })
+    .catch(function () { /* offline or rate-limited: keep the page as it is */ });
+})();
+  </script>
+</body>
+</html>
