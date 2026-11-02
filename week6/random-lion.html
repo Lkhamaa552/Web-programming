@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Lion Generator</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff4df;
+            text-align: center;
+            padding: 50px 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #a66a24;
+            font-size: 35px;
+        }
+
+        p {
+            color: #666;
+        }
+
+        select {
+            padding: 12px;
+            width: 80%;
+            margin: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #a66a24;
+            color: white;
+            border: none;
+            padding: 13px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #754719;
+        }
+
+        img {
+            width: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 25px;
+            display: none;
+        }
+
+        #lionName {
+            font-size: 20px;
+            color: #a66a24;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🦁 Random Lion Generator</h1>
+
+        <p>
+            Discover a random lion with just one click!
+            Choose your favorite lion category below.
+        </p>
+
+        <select id="lionType">
+            <option value="lion">All Lions</option>
+            <option value="male lion">Male Lion</option>
+            <option value="lioness">Lioness</option>
+            <option value="lion cub">Lion Cub</option>
+            <option value="white lion">White Lion</option>
+        </select>
+
+        <br>
+
+        <button onclick="getLion()">Get a Random Lion 🦁</button>
+
+        <div>
+            <img id="lionImage" alt="Random Lion">
+
+            <h2 id="lionName"></h2>
+
+            <p id="description"></p>
+        </div>
+
+    </div>
+
+    <script>
+
+        async function getLion() {
+
+            const type = document.getElementById("lionType").value;
+            const image = document.getElementById("lionImage");
+            const name = document.getElementById("lionName");
+            const description = document.getElementById("description");
+
+            name.innerText = "Loading...";
+            description.innerText = "";
+
+            try {
+
+                const url = new URL("https://commons.wikimedia.org/w/api.php");
+
+                url.search = new URLSearchParams({
+                    action: "query",
+                    generator: "search",
+                    gsrsearch: type + " filetype:bitmap",
+                    gsrnamespace: "6",
+                    gsrlimit: "40",
+                    prop: "imageinfo",
+                    iiprop: "url",
+                    iiurlwidth: "900",
+                    format: "json",
+                    origin: "*"
+                });
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const pages = Object.values(data.query?.pages || {})
+                    .filter(page => page.imageinfo?.[0]);
+
+                if (pages.length === 0) {
+                    throw new Error("No lion images found!");
+                }
+
+                const randomLion =
+                    pages[Math.floor(Math.random() * pages.length)];
+
+                const lionURL =
+                    randomLion.imageinfo[0].thumburl ||
+                    randomLion.imageinfo[0].url;
+
+                image.onload = function() {
+                    image.style.display = "block";
+                    name.innerText = randomLion.title
+                        .replace("File:", "")
+                        .replaceAll("_", " ");
+
+                    description.innerText =
+                        "Here is your random " + type + "!";
+                };
+
+                image.onerror = function() {
+                    name.innerText = "Image failed to load. Try again!";
+                    image.style.display = "none";
+                };
+
+                image.src = lionURL;
+
+            } catch (error) {
+
+                name.innerText = "Something went wrong!";
+                description.innerText = error.message;
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
