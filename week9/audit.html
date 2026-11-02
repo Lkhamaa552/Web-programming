@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accessibility Audit Report - Aranjmaa Lkhamaa</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: 40px 20px;
+    max-width: 760px;
+    margin: 0 auto;
+    color: #1e293b;
+    line-height: 1.7;
+    background: #f8fafc;
+  }
+
+  .container {
+    background: #ffffff;
+    padding: 44px;
+    border-radius: 16px;
+    border-top: 5px solid #1E7466;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  }
+
+  h1 { font-size: 28px; margin: 0 0 4px; color: #0f172a; }
+
+  .subtitle { font-size: 14px; color: #64748b; margin-bottom: 28px; }
+
+  h2 {
+    font-size: 18px;
+    margin-top: 36px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f1f5f9;
+    color: #334155;
+  }
+
+  .score-box {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+    margin: 24px 0;
+  }
+
+  .score-box h3 { margin: 0; font-size: 14px; color: #065f46; }
+
+  .score-number { font-size: 48px; font-weight: 900; color: #059669; margin: 6px 0; }
+
+  .page-url { font-size: 14px; color: #065f46; word-break: break-all; }
+
+  ul { padding-left: 20px; }
+  li { margin-bottom: 10px; }
+
+  code {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+
+  .screenshot-box {
+    margin: 24px 0;
+    text-align: center;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .screenshot-box p { font-weight: 600; font-size: 14px; margin: 0 0 12px; }
+
+  .screenshot-box img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+  }
+
+  a { color: #1E7466; }
+
+  .footer {
+    margin-top: 44px;
+    padding-top: 20px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 13px;
+    color: #64748b;
+    text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 24px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<main class="container">
+  <h1>Accessibility Audit Report</h1>
+  <div class="subtitle">LifeOS (Team 9 project) | Aranjmaa Lkhamaa, 202637428 | Web Programming</div>
+
+  <div class="score-box">
+    <h3>Lighthouse Accessibility Score</h3>
+    <div class="score-number">100 / 100</div>
+    <div class="page-url">Audited page: <a href="https://lkhamaa552.github.io/Web-programming/lifeos.html">lkhamaa552.github.io/Web-programming/lifeos.html</a></div>
+  </div>
+
+  <h2>1. How I tested</h2>
+  <p>I opened our team page on my own GitHub Pages site and ran Lighthouse in Chrome DevTools (Lighthouse tab, Accessibility only, Desktop).</p>
+
+  <h2>2. Result</h2>
+  <p>The page scored <strong>100 / 100</strong>, which is above the 85 target. Lighthouse did not find any failing automatic checks.</p>
+  <p>Lighthouse also shows <strong>10 items to check manually</strong>, for example “Interactive controls are keyboard focusable”.</p>
+
+  <h2>3. Manual keyboard check</h2>
+  <p>I closed DevTools and moved through the page with the <code>Tab</code> key:</p>
+  <ul>
+    <li>The menu buttons (Overview, My Life, Plan, + Add) can be reached with Tab.</li>
+    <li>On the My Life and Plan pages, the record rows (for example “Wireless headphones”) are skipped by Tab, because they are <code>&lt;div&gt;</code> elements with a click handler, not real buttons. So a keyboard user cannot open them.</li>
+    <li>When a record window opens, the focus stays on the page behind it.</li>
+  </ul>
+  <p>Lighthouse cannot find these problems automatically, which is why it asks for a manual check.</p>
+
+  <h2>4. Lighthouse screenshot</h2>
+  <div class="screenshot-box">
+    <p>Lighthouse Accessibility audit: 100 / 100 (URL visible in the address bar)</p>
+    <a href="lighthouse.png" target="_blank">
+      <img src="lighthouse.png" alt="Lighthouse Accessibility audit of lkhamaa552.github.io/Web-programming/lifeos.html showing a score of 100">
+    </a>
+  </div>
+
+  <h2>5. Conclusion</h2>
+  <p>LifeOS gets a full Lighthouse score, but the manual keyboard check shows that some parts still need work. The next step is to change the clickable <code>&lt;div&gt;</code> rows into <code>&lt;button&gt;</code> elements and to move the focus into the record window when it opens.</p>
+
+  <div class="footer">Aranjmaa Lkhamaa | 202637428 | Team 9 | Web Programming</div>
+</main>
+
+</body>
+</html>
