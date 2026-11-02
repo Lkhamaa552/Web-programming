@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoLogin | Sign In</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #e5f5e9, #b8dfc3);
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 42px 35px;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(28, 91, 49, 0.13);
+        }
+
+        .logo {
+            font-size: 42px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: #176b3a;
+            text-align: center;
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #829187;
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #315d40;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 9px;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d4e6d9;
+            border-radius: 9px;
+            font-size: 14px;
+            outline: none;
+            background: #f8fcf9;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #31965a;
+            box-shadow: 0 0 0 3px rgba(49, 150, 90, 0.1);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 65px;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            color: #27864b;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0 25px;
+            font-size: 13px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #63776a;
+        }
+
+        .remember input {
+            accent-color: #27864b;
+            cursor: pointer;
+        }
+
+        .forgot {
+            color: #27864b;
+            text-decoration: none;
+        }
+
+        .forgot:hover {
+            text-decoration: underline;
+        }
+
+        .sign-in-btn {
+            width: 100%;
+            padding: 15px;
+            background: #27864b;
+            border: none;
+            border-radius: 9px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .sign-in-btn:hover {
+            background: #176b3a;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 18px;
+            line-height: 1.5;
+        }
+
+        .success {
+            color: #27864b;
+        }
+
+        .error {
+            color: #d33b3b;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #9aab9e;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 32px 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <div class="logo">🌿</div>
+
+        <h1>Welcome Back</h1>
+
+        <p class="subtitle">
+            Sign in to continue to your account.
+        </p>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="email">Email Address</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="password">Password</label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                        minlength="6"
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword()"
+                    >
+                        SHOW
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="options">
+
+                <label class="remember">
+                    <input type="checkbox" id="remember">
+                    Remember me
+                </label>
+
+                <a href="#" class="forgot" onclick="forgotPassword(event)">
+                    Forgot password?
+                </a>
+
+            </div>
+
+            <button type="submit" class="sign-in-btn">
+                Sign In →
+            </button>
+
+            <p id="message" class="message"></p>
+
+        </form>
+
+        <div class="footer">
+            🌱 EcoLogin | Created by [Your Name]
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const rememberCheckbox = document.getElementById("remember");
+        const message = document.getElementById("message");
+
+        // Load previously remembered email
+        window.onload = function() {
+
+            const savedEmail = localStorage.getItem("savedEmail");
+
+            if (savedEmail) {
+                emailInput.value = savedEmail;
+                rememberCheckbox.checked = true;
+            }
+
+        };
+
+        // Show or hide password
+        function togglePassword() {
+
+            const button = document.querySelector(".show-password");
+
+            if (passwordInput.type === "password") {
+
+                passwordInput.type = "text";
+                button.innerText = "HIDE";
+
+            } else {
+
+                passwordInput.type = "password";
+                button.innerText = "SHOW";
+
+            }
+
+        }
+
+        // Login form submission
+        document.getElementById("loginForm")
+            .addEventListener("submit", function(event) {
+
+                event.preventDefault();
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                if (!email || !password) {
+
+                    message.innerText = "Please fill in all fields.";
+                    message.className = "message error";
+                    return;
+
+                }
+
+                if (rememberCheckbox.checked) {
+
+                    localStorage.setItem("savedEmail", email);
+
+                } else {
+
+                    localStorage.removeItem("savedEmail");
+
+                }
+
+                message.innerText =
+                    "Welcome! Your form has been submitted successfully.";
+
+                message.className = "message success";
+
+            });
+
+        // Forgot password message
+        function forgotPassword(event) {
+
+            event.preventDefault();
+
+            message.innerText =
+                "Please contact the administrator to reset your password.";
+
+            message.className = "message error";
+
+        }
+
+    </script>
+
+</body>
+</html>
