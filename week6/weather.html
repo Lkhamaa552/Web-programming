@@ -1,0 +1,435 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCast | Weather Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e9f7ed, #c9e9d2);
+            color: #193c2a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 750px;
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 40px;
+            box-shadow: 0 15px 45px rgba(26, 85, 48, 0.12);
+            text-align: center;
+        }
+
+        .brand {
+            color: #31965a;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 42px;
+            color: #176b3a;
+            margin-bottom: 15px;
+        }
+
+        .intro {
+            color: #718477;
+            line-height: 1.7;
+            max-width: 520px;
+            margin: 0 auto 30px;
+        }
+
+        .api-label {
+            display: inline-block;
+            background: #e5f5e9;
+            color: #26844a;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .form-area {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #315d40;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #c9e1d0;
+            border-radius: 10px;
+            background: #f7fcf8;
+            font-size: 15px;
+            color: #244d33;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        select:focus {
+            border-color: #31965a;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #27864b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #176b3a;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .weather-card {
+            margin-top: 30px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #effaf1, #d9f0df);
+            border-radius: 16px;
+            min-height: 220px;
+        }
+
+        .weather-icon {
+            font-size: 65px;
+            margin-bottom: 10px;
+        }
+
+        .weather-card h2 {
+            color: #236b3c;
+            font-size: 23px;
+            margin-bottom: 10px;
+        }
+
+        .temperature {
+            font-size: 55px;
+            font-weight: bold;
+            color: #176b3a;
+            margin: 15px 0;
+        }
+
+        .weather-description {
+            color: #66816d;
+            font-size: 16px;
+        }
+
+        .weather-details {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .detail {
+            background: white;
+            padding: 18px 8px;
+            border-radius: 12px;
+            border: 1px solid #e1eee4;
+        }
+
+        .detail-icon {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+
+        .detail h3 {
+            color: #267545;
+            font-size: 19px;
+            margin-bottom: 6px;
+        }
+
+        .detail p {
+            color: #829187;
+            font-size: 12px;
+        }
+
+        .message {
+            color: #718477;
+            line-height: 1.6;
+        }
+
+        .error {
+            color: #c0392b;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #9aab9e;
+            font-size: 12px;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 25px 18px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .weather-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="brand">🌿 LIVE WEATHER DASHBOARD</div>
+
+        <h1>EcoCast</h1>
+
+        <p class="intro">
+            Your little window into the weather.
+            Explore real-time temperature, humidity,
+            wind, and atmospheric conditions around the world.
+        </p>
+
+        <div class="api-label">
+            POWERED BY OPEN-METEO
+        </div>
+
+        <div class="form-area">
+
+            <label for="location">
+                Choose your location
+            </label>
+
+            <select id="location">
+                <option value="37.5665,126.9780,Seoul">Seoul, South Korea</option>
+                <option value="47.9184,106.9177,Ulaanbaatar">Ulaanbaatar, Mongolia</option>
+                <option value="35.6762,139.6503,Tokyo">Tokyo, Japan</option>
+                <option value="51.5072,-0.1276,London">London, UK</option>
+                <option value="40.7128,-74.0060,New York">New York, USA</option>
+                <option value="48.8566,2.3522,Paris">Paris, France</option>
+                <option value="37.7749,-122.4194,San Francisco">San Francisco, USA</option>
+                <option value="25.2048,55.2708,Dubai">Dubai, UAE</option>
+                <option value="13.7563,100.5018,Bangkok">Bangkok, Thailand</option>
+                <option value="-33.8688,151.2093,Sydney">Sydney, Australia</option>
+            </select>
+
+            <button id="getWeather" onclick="getWeather()">
+                ✦ Get Weather
+            </button>
+
+        </div>
+
+        <div class="weather-card">
+
+            <div class="weather-icon" id="weatherIcon">
+                🌍
+            </div>
+
+            <h2 id="cityName">Ready to Explore?</h2>
+
+            <div class="temperature" id="temperature"></div>
+
+            <p class="weather-description" id="description">
+                Select a location and fetch its latest weather observations.
+            </p>
+
+            <div class="weather-details" id="weatherDetails">
+
+                <div class="detail">
+                    <div class="detail-icon">🌡️</div>
+                    <h3 id="feelsLike">--</h3>
+                    <p>Feels Like</p>
+                </div>
+
+                <div class="detail">
+                    <div class="detail-icon">💧</div>
+                    <h3 id="humidity">--</h3>
+                    <p>Humidity</p>
+                </div>
+
+                <div class="detail">
+                    <div class="detail-icon">💨</div>
+                    <h3 id="wind">--</h3>
+                    <p>Wind Speed</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="footer">
+            Created by [Your Name] | Week 6 - Friday Task 5
+        </div>
+
+    </div>
+
+
+    <script>
+
+        async function getWeather() {
+
+            const location = document.getElementById("location").value;
+
+            const parts = location.split(",");
+
+            const latitude = parts[0];
+            const longitude = parts[1];
+            const city = parts[2];
+
+            const button = document.getElementById("getWeather");
+
+            button.disabled = true;
+            button.innerText = "Loading Weather...";
+
+            document.getElementById("cityName").innerText = "Loading...";
+            document.getElementById("temperature").innerText = "";
+            document.getElementById("description").innerText = "";
+            document.getElementById("weatherDetails").style.display = "none";
+            document.getElementById("weatherIcon").innerText = "🌍";
+
+            try {
+
+                const url =
+                    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&timezone=auto`;
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error("Weather data could not be loaded.");
+                }
+
+                const data = await response.json();
+
+                const current = data.current;
+
+                const temperature = current.temperature_2m;
+                const humidity = current.relative_humidity_2m;
+                const wind = current.wind_speed_10m;
+                const feelsLike = current.apparent_temperature;
+                const code = current.weather_code;
+
+                let weatherText = "";
+                let icon = "";
+
+                if (code === 0) {
+                    weatherText = "Clear Sky";
+                    icon = current.is_day ? "☀️" : "🌙";
+                }
+
+                else if ([1, 2, 3].includes(code)) {
+                    weatherText = "Partly Cloudy";
+                    icon = current.is_day ? "⛅" : "☁️";
+                }
+
+                else if ([45, 48].includes(code)) {
+                    weatherText = "Foggy";
+                    icon = "🌫️";
+                }
+
+                else if ([51, 53, 55, 56, 57].includes(code)) {
+                    weatherText = "Drizzle";
+                    icon = "🌦️";
+                }
+
+                else if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) {
+                    weatherText = "Rainy";
+                    icon = "🌧️";
+                }
+
+                else if ([71, 73, 75, 77, 85, 86].includes(code)) {
+                    weatherText = "Snowy";
+                    icon = "❄️";
+                }
+
+                else if ([95, 96, 99].includes(code)) {
+                    weatherText = "Thunderstorm";
+                    icon = "⛈️";
+                }
+
+                else {
+                    weatherText = "Unknown Conditions";
+                    icon = "🌍";
+                }
+
+                document.getElementById("weatherIcon").innerText = icon;
+
+                document.getElementById("cityName").innerText = city;
+
+                document.getElementById("temperature").innerText =
+                    Math.round(temperature) + "°C";
+
+                document.getElementById("description").innerText =
+                    weatherText;
+
+                document.getElementById("feelsLike").innerText =
+                    Math.round(feelsLike) + "°C";
+
+                document.getElementById("humidity").innerText =
+                    humidity + "%";
+
+                document.getElementById("wind").innerText =
+                    wind + " km/h";
+
+                document.getElementById("weatherDetails").style.display =
+                    "grid";
+
+            }
+
+            catch (error) {
+
+                document.getElementById("cityName").innerText =
+                    "Something went wrong!";
+
+                document.getElementById("description").innerText =
+                    error.message + " Please try again.";
+
+                document.getElementById("description").className = "message error";
+
+            }
+
+            finally {
+
+                button.disabled = false;
+                button.innerText = "✦ Get Weather";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
