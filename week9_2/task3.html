@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 9-2 · Task 3: Script Loading (defer vs async)</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 680px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #1E7466; margin-bottom: 4px; }
+    .card { background: #fff; padding: 18px 22px; border-radius: 12px; margin: 16px 0; }
+    #log li { margin-bottom: 6px; }
+    .tag { display: inline-block; min-width: 70px; font-weight: bold; color: #175E53; }
+  </style>
+
+  <!-- 1) Normal script: runs immediately and BLOCKS the HTML parser -->
+  <script>
+    window.timeline = [];
+    window.timeline.push(['normal', 'Normal script ran first. The page below did not exist yet: ' + (document.getElementById('log') === null)]);
+  </script>
+
+  <!-- 2) Deferred script (type="module" is deferred by default):
+       waits until the HTML is parsed, then runs in order -->
+  <script type="module">
+    window.timeline.push(['defer', 'Deferred script ran after the HTML was parsed. Log list found: ' + (document.getElementById('log') !== null)]);
+  </script>
+
+  <!-- 3) Async script: runs as soon as it is ready, does not wait for the page.
+       Good for independent scripts such as analytics. -->
+  <script type="module" async>
+    window.timeline.push(['async', 'Async script ran as soon as it was ready (independent, like analytics).']);
+  </script>
+</head>
+<body>
+  <h1>Script Loading: defer vs async</h1>
+  <p>This page has three scripts in the &lt;head&gt;. The list shows the order they ran in.</p>
+
+  <div class="card">
+    <h2>Order the scripts ran</h2>
+    <ol id="log"></ol>
+  </div>
+
+  <div class="card">
+    <h2>What I learned</h2>
+    <ul>
+      <li><b>Normal script:</b> stops the HTML from loading until it finishes, so the page appears later.</li>
+      <li><b>defer:</b> downloads in the background and runs after the HTML is ready, in order. Best for main page scripts.</li>
+      <li><b>async:</b> downloads in the background and runs as soon as it is ready, in any order. Best for independent scripts like analytics.</li>
+    </ul>
+  </div>
+  <script>
+    // When everything has loaded, show the order the scripts ran in
+    window.addEventListener('load', function () {
+      var list = document.getElementById('log');
+      window.timeline.forEach(function (item) {
+        var li = document.createElement('li');
+        li.innerHTML = '<span class="tag">' + item[0] + '</span> ' + item[1];
+        list.appendChild(li);
+      });
+    });
+  </script>
+</body>
+</html>
