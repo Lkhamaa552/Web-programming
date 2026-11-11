@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 9-2 · Task 2: Image Formats</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 680px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #1E7466; margin-bottom: 4px; }
+    img { width: 100%; height: auto; border-radius: 10px; }
+    .card { background: #fff; padding: 18px 22px; border-radius: 12px; margin: 20px 0; }
+    h2 { color: #1E7466; margin-top: 0; }
+  </style>
+</head>
+<body>
+  <h1>Image Format Practice</h1>
+  <p>The browser picks the best format (WebP) and the right size for the screen.</p>
+
+  <picture>
+    <!-- WebP version: smaller file, used by modern browsers -->
+    <source type="image/webp"
+            srcset="https://picsum.photos/id/1043/400/250.webp 400w,
+                    https://picsum.photos/id/1043/800/500.webp 800w"
+            sizes="(max-width: 480px) 400px, 800px">
+    <!-- JPEG fallback for older browsers -->
+    <img src="https://picsum.photos/id/1043/800/500.jpg"
+         srcset="https://picsum.photos/id/1043/400/250.jpg 400w,
+                 https://picsum.photos/id/1043/800/500.jpg 800w"
+         sizes="(max-width: 480px) 400px, 800px"
+         alt="Calm lake with a wooden pier" width="800" height="500">
+  </picture>
+
+  <div class="card">
+    <h2>What I did</h2>
+    <ul>
+      <li><code>&lt;picture&gt;</code> with a WebP <code>&lt;source&gt;</code> and a JPEG fallback.</li>
+      <li><code>srcset</code> and <code>sizes</code>, so a phone downloads the small 400px image and a laptop the 800px one.</li>
+      <li><code>width</code>, <code>height</code> and <code>alt</code> on the image.</li>
+      <li>How to check: DevTools, then the Network tab, then Img. Reload the page and look at the type (webp) and size.</li>
+    </ul>
+  </div>
+</body>
+</html>
