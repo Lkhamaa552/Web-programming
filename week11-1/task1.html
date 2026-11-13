@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 11 · Exercise 1: ProfileCard</title>
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #1E7466; margin-bottom: 4px; }
+    .intro { color: #4A5F5C; margin-top: 0; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px; }
+    .profile-card { background: #fff; border: 1px solid #D5DFDC; border-radius: 14px; padding: 22px; text-align: center; }
+    .profile-card img { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; background: #E2E9E6; }
+    .profile-card h2 { margin: 10px 0 2px; font-size: 19px; }
+    .role { color: #4A5F5C; margin: 0 0 8px; }
+    .profile-card a { color: #1E7466; }
+  </style>
+</head>
+<body>
+  <h1>Exercise 1 · ProfileCard</h1>
+  <p class="intro">A component that gets name, role and email as props. avatarUrl is optional and has a default.</p>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // ProfileCard: props are destructured, avatarUrl has a default value
+    function ProfileCard({ name, role, email, avatarUrl = "https://placehold.co/88x88?text=Photo" }) {
+      return (
+        <article className="profile-card">
+          <img src={avatarUrl} alt={"Photo of " + name} width="88" height="88" />
+          <h2>{name}</h2>
+          <p className="role">{role}</p>
+          <a href={"mailto:" + email}>{email}</a>
+        </article>
+      );
+    }
+
+    function App() {
+      return (
+        <div className="cards">
+          {/* avatarUrl is given */}
+          <ProfileCard
+            name="Aranjmaa Lkhamaa"
+            role="Web Programming Student"
+            email="student@gachon.ac.kr"
+            avatarUrl="https://picsum.photos/id/64/88/88"
+          />
+          {/* avatarUrl is NOT given, so the default placeholder is used */}
+          <ProfileCard
+            name="Team 9 Member"
+            role="LifeOS Project"
+            email="team9@example.com"
+          />
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
