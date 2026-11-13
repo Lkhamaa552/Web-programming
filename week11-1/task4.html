@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 11 · Code Challenge: ProductCard</title>
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 760px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #1E7466; margin-bottom: 4px; }
+    .intro { color: #4A5F5C; margin-top: 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-top: 20px; }
+    .product { background: #fff; border: 1px solid #D5DFDC; border-radius: 14px; padding: 20px; }
+    .product h2 { margin: 0 0 6px; font-size: 18px; }
+    .price { font-size: 22px; font-weight: 700; margin: 0 0 6px; }
+    .stars { color: #B45309; font-size: 18px; letter-spacing: 1px; }
+    .rating-text { color: #4A5F5C; font-size: 14px; margin: 0 0 10px; }
+    .label { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+    .in { background: #E6F2EF; color: #175E53; }
+    .out { background: #FDECEC; color: #9B1C1C; }
+  </style>
+</head>
+<body>
+  <h1>Code Challenge · ProductCard</h1>
+  <p class="intro">ProductCard gets name, price (KRW), rating (0–5) and inStock as props. Bonus 1: "4.5 / 5 stars". Bonus 2: "Out of Stock" label.</p>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Small helper component: turns a number like 4.5 into ★★★★½
+    function Stars({ rating }) {
+      const full = Math.floor(rating);
+      const half = rating - full >= 0.5;
+      const empty = 5 - full - (half ? 1 : 0);
+      return (
+        <span className="stars" aria-hidden="true">
+          {"★".repeat(full)}{half && "½"}{"☆".repeat(empty)}
+        </span>
+      );
+    }
+
+    function ProductCard({ name, price, rating = 0, inStock = true }) {
+      return (
+        <article className="product">
+          <h2>{name}</h2>
+          <p className="price">{price.toLocaleString()}원</p>
+          <Stars rating={rating} />
+          {/* Bonus 1 */}
+          <p className="rating-text">{rating} / 5 stars</p>
+          {/* Bonus 2: ternary chooses the label */}
+          {inStock
+            ? <span className="label in">In Stock</span>
+            : <span className="label out">Out of Stock</span>}
+        </article>
+      );
+    }
+
+    const products = [
+      { id: 1, name: "Wireless Earbuds", price: 89000, rating: 4.5, inStock: true },
+      { id: 2, name: "Cashmere Scarf",   price: 129000, rating: 5,   inStock: true },
+      { id: 3, name: "Yoga Mat",         price: 35000, rating: 3.5, inStock: false }
+    ];
+
+    function App() {
+      return (
+        <div className="grid">
+          {products.map((p) => (
+            <ProductCard key={p.id} name={p.name} price={p.price} rating={p.rating} inStock={p.inStock} />
+          ))}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
