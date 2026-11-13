@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 11 · Exercise 3: Card with children</title>
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #1E7466; margin-bottom: 4px; }
+    .intro { color: #4A5F5C; margin-top: 0; }
+    .card { background: #EAF4F1; border: 2px solid #1E7466; border-radius: 12px; padding: 16px 20px; margin: 18px 0; }
+    .card h2 { margin: 0 0 8px; font-size: 19px; color: #175E53; }
+  </style>
+</head>
+<body>
+  <h1>Exercise 3 · Card with children</h1>
+  <p class="intro">One reusable Card component. It shows a title and whatever is put inside it (props.children).</p>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Reusable Card: title comes from props, the content comes from children
+    function Card({ title, children }) {
+      return (
+        <section className="card">
+          <h2>{title}</h2>
+          {children}
+        </section>
+      );
+    }
+
+    function App() {
+      return (
+        <>
+          <Card title="Lecture Topics">
+            <ul>
+              <li>Functional components and JSX</li>
+              <li>Props and default values</li>
+              <li>Lists with .map() and key</li>
+              <li>Conditional rendering</li>
+            </ul>
+          </Card>
+
+          <Card title="Homework">
+            <p>Build three small React components (ProfileCard, Notifications, Card) and publish them on GitHub Pages.</p>
+          </Card>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
