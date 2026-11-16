@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 9-2 · BEFORE: Slow Page</title>
+
+  <!-- Problem 1: three big libraries load in the head WITHOUT defer, so they block the page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.js"></script>
+
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 680px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #9B1C1C; margin-bottom: 4px; }
+    img { width: 100%; border-radius: 10px; margin: 12px 0; }
+    .card { background: #fff; padding: 18px 22px; border-radius: 12px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <h1>BEFORE: Slow Page</h1>
+  <p>This is the unoptimized version. Compare it with the fixed version in Task 1.</p>
+
+  <!-- Problem 2: huge images (2400px), no width/height, no lazy loading -->
+  <img src="https://picsum.photos/id/1015/2400/1400" alt="River between mountains">
+  <p>Scroll down to see more photos.</p>
+  <img src="https://picsum.photos/id/1016/2400/1400" alt="Rocky canyon">
+  <img src="https://picsum.photos/id/1018/2400/1400" alt="Green mountain valley">
+
+  <div class="card">
+    <h2>Problems on this page</h2>
+    <ol>
+      <li>Three large scripts in the &lt;head&gt; without <code>defer</code> block rendering.</li>
+      <li>Images have no <code>width</code>/<code>height</code>, so the text jumps down while they load (layout shift).</li>
+      <li>All images load at once, even the ones far below the screen (no <code>loading="lazy"</code>).</li>
+      <li>Images are 2400px wide, much bigger than the 680px they are shown at.</li>
+    </ol>
+  </div>
+</body>
+</html>
