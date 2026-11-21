@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 12-2 · Exercise 3: Stopwatch</title>
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #1E7466; margin-bottom: 4px; }
+    .intro { color: #4A5F5C; margin-top: 0; }
+    .box { background: #fff; border: 1px solid #D5DFDC; border-radius: 14px; padding: 20px 22px; margin-top: 20px; }
+    button { font-family: inherit; font-size: 15px; padding: 8px 16px; border-radius: 8px; border: 1px solid #1E7466; background: #1E7466; color: #fff; cursor: pointer; }
+    button.light { background: #fff; color: #1E7466; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button:focus-visible, input:focus-visible { outline: 3px solid #F5B642; outline-offset: 2px; }
+    .time { font-size: 60px; font-weight: 700; text-align: center; color: #1E7466; margin: 0; font-family: ui-monospace, Consolas, monospace; }
+    .buttons { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Exercise 3 · Stopwatch with Cleanup</h1>
+  <p class="intro">setInterval starts in useEffect only while running is true. The cleanup function clears the interval, so the timer never runs twice.</p>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function Stopwatch() {
+      const [running, setRunning] = useState(false);
+      const [tenths, setTenths] = useState(0);   // time in 0.1 second steps
+
+      useEffect(() => {
+        if (!running) return;                       // nothing to do when stopped
+        const id = setInterval(() => setTenths((t) => t + 1), 100);
+        return () => clearInterval(id);             // cleanup on stop / unmount
+      }, [running]);
+
+      const minutes = String(Math.floor(tenths / 600)).padStart(2, "0");
+      const seconds = String(Math.floor((tenths % 600) / 10)).padStart(2, "0");
+      const tenth = tenths % 10;
+
+      return (
+        <div className="box">
+          <p className="time" aria-live="off">{minutes}:{seconds}.{tenth}</p>
+          <div className="buttons">
+            <button type="button" onClick={() => setRunning(true)} disabled={running}>Start</button>
+            <button type="button" className="light" onClick={() => setRunning(false)} disabled={!running}>Stop</button>
+            <button type="button" className="light" onClick={() => { setRunning(false); setTenths(0); }}>Reset</button>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<Stopwatch />);
+  </script>
+</body>
+</html>
