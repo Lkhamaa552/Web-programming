@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 12-2 · Code Challenge: GitHub User Lookup</title>
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #1E7466; margin-bottom: 4px; }
+    .intro { color: #4A5F5C; margin-top: 0; }
+    .box { background: #fff; border: 1px solid #D5DFDC; border-radius: 14px; padding: 20px 22px; margin-top: 20px; }
+    button { font-family: inherit; font-size: 15px; padding: 8px 16px; border-radius: 8px; border: 1px solid #1E7466; background: #1E7466; color: #fff; cursor: pointer; }
+    button.light { background: #fff; color: #1E7466; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button:focus-visible, input:focus-visible { outline: 3px solid #F5B642; outline-offset: 2px; }
+    input { font: inherit; padding: 8px 12px; border: 1px solid #B9CCC7; border-radius: 8px; }
+    .error { color: #9B1C1C; background: #FDECEC; padding: 10px 12px; border-radius: 8px; }
+    .muted { color: #4A5F5C; }
+    .row { display: flex; gap: 8px; }
+    .row input { flex: 1; }
+    .profile { display: flex; gap: 16px; align-items: center; margin-top: 16px; }
+    .profile img { width: 88px; height: 88px; border-radius: 50%; background: #E2E9E6; }
+    .profile h2 { margin: 0; }
+    .profile p { margin: 4px 0; }
+    .stats { color: #1E7466; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>Code Challenge · GitHub User Lookup</h1>
+  <p class="intro">Type a GitHub username and press Search. Shows avatar, name, bio, followers and public repos, with loading, 404 error and abort of the previous request.</p>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function GitHubLookup() {
+      const [input, setInput] = useState("Lkhamaa552");
+      const [username, setUsername] = useState("Lkhamaa552");   // the name we actually fetch
+      const [user, setUser] = useState(null);
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState("");
+
+      useEffect(() => {
+        if (!username) return;
+        const controller = new AbortController();
+        setLoading(true);
+        setError("");
+
+        fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { signal: controller.signal })
+          .then((res) => {
+            if (res.status === 404) throw new Error(`User "${username}" was not found (404).`);
+            if (res.status === 403) throw new Error("GitHub rate limit reached. Try again later.");
+            if (!res.ok) throw new Error(`Request failed (${res.status})`);
+            return res.json();
+          })
+          .then((data) => { setUser(data); setLoading(false); })
+          .catch((err) => {
+            if (err.name === "AbortError") return;   // BONUS: previous request was aborted
+            setUser(null);
+            setError(err.message);
+            setLoading(false);
+          });
+
+        return () => controller.abort();            // abort when username changes
+      }, [username]);
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        setUsername(input.trim());
+      }
+
+      return (
+        <div className="box">
+          <form className="row" onSubmit={handleSubmit}>
+            <label htmlFor="gh" style={{ position: "absolute", left: "-9999px" }}>GitHub username</label>
+            <input id="gh" value={input} onChange={(e) => setInput(e.target.value)} placeholder="e.g. muxiddin19" />
+            <button type="submit">Search</button>
+          </form>
+
+          {loading && <p className="muted" role="status">Loading…</p>}
+          {error && <p className="error" role="alert">{error}</p>}
+          {!loading && !error && user && (
+            <div className="profile">
+              <img src={user.avatar_url} alt={"Avatar of " + user.login} width="88" height="88" />
+              <div>
+                <h2><a href={user.html_url} target="_blank" rel="noopener">{user.name || user.login}</a></h2>
+                <p>{user.bio || "No bio yet."}</p>
+                <p className="stats">{user.followers} followers · {user.public_repos} public repos</p>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<GitHubLookup />);
+  </script>
+</body>
+</html>
