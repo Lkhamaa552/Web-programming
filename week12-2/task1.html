@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 12-2 · Exercise 1: Page Title Sync</title>
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #1E7466; margin-bottom: 4px; }
+    .intro { color: #4A5F5C; margin-top: 0; }
+    .box { background: #fff; border: 1px solid #D5DFDC; border-radius: 14px; padding: 20px 22px; margin-top: 20px; }
+    button { font-family: inherit; font-size: 15px; padding: 8px 16px; border-radius: 8px; border: 1px solid #1E7466; background: #1E7466; color: #fff; cursor: pointer; }
+    button.light { background: #fff; color: #1E7466; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button:focus-visible, input:focus-visible { outline: 3px solid #F5B642; outline-offset: 2px; }
+    input { font: inherit; padding: 8px 12px; border: 1px solid #B9CCC7; border-radius: 8px; }
+    .error { color: #9B1C1C; background: #FDECEC; padding: 10px 12px; border-radius: 8px; }
+    .muted { color: #4A5F5C; }
+    .tab { margin-top: 14px; display: inline-block; background: #E2E9E6; padding: 6px 14px; border-radius: 8px 8px 0 0; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>Exercise 1 · Page Title Sync</h1>
+  <p class="intro">Type a name. useEffect copies it into the browser tab title every time the name changes (dependency: [name]).</p>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function TitleSync() {
+      const [name, setName] = useState("Aranjmaa");
+
+      // Runs after every render where "name" changed
+      useEffect(() => {
+        document.title = name.trim() ? `${name.trim()}'s Portfolio` : "Week 12-2 · Exercise 1";
+      }, [name]);
+
+      return (
+        <div className="box">
+          <label htmlFor="name">Your name: </label>
+          <input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+          <div><span className="tab">🗂 Browser tab: {name.trim() ? `${name.trim()}'s Portfolio` : "Week 12-2 · Exercise 1"}</span></div>
+          <p className="muted">Look at the real tab title at the top of your browser. It changes while you type.</p>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<TitleSync />);
+  </script>
+</body>
+</html>
