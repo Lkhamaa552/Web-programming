@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 12 · Exercise 3: ScoreBoard</title>
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #1E7466; margin-bottom: 4px; }
+    .intro { color: #4A5F5C; margin-top: 0; }
+    .box { background: #fff; border: 1px solid #D5DFDC; border-radius: 14px; padding: 20px 22px; margin-top: 20px; }
+    button { font-family: inherit; font-size: 15px; padding: 8px 16px; border-radius: 8px; border: 1px solid #1E7466; background: #1E7466; color: #fff; cursor: pointer; }
+    button.light { background: #fff; color: #1E7466; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button:focus-visible, input:focus-visible { outline: 3px solid #F5B642; outline-offset: 2px; }
+    .players { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .player { text-align: center; }
+    .player h2 { margin: 0 0 4px; font-size: 18px; }
+    .score { font-size: 40px; font-weight: 700; color: #1E7466; margin: 0 0 10px; }
+    .player button { margin: 0 4px; min-width: 44px; }
+    .total { text-align: center; font-size: 20px; }
+    .total strong { color: #1E7466; font-size: 28px; }
+    @media (max-width: 520px) { .players { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>Exercise 3 · ScoreBoard (Lifting State Up)</h1>
+  <p class="intro">The scores live in the parent ScoreBoard. Each PlayerScore only gets its score and two callbacks as props, so the parent can show the total.</p>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // Child: shows one player and asks the parent to change the score
+    function PlayerScore({ name, score, onIncrement, onDecrement }) {
+      return (
+        <div className="box player">
+          <h2>{name}</h2>
+          <p className="score">{score}</p>
+          <button type="button" className="light" aria-label={"Decrease " + name} onClick={onDecrement}>−1</button>
+          <button type="button" aria-label={"Increase " + name} onClick={onIncrement}>+1</button>
+        </div>
+      );
+    }
+
+    // Parent: owns BOTH scores, so it can compute the total
+    function ScoreBoard() {
+      const [scores, setScores] = useState({ a: 0, b: 0 });
+
+      function change(player, amount) {
+        setScores((prev) => ({ ...prev, [player]: prev[player] + amount }));
+      }
+
+      return (
+        <>
+          <div className="players">
+            <PlayerScore name="Team Murun" score={scores.a} onIncrement={() => change("a", 1)} onDecrement={() => change("a", -1)} />
+            <PlayerScore name="Team Anand" score={scores.b} onIncrement={() => change("b", 1)} onDecrement={() => change("b", -1)} />
+          </div>
+          <div className="box total">
+            Total score: <strong>{scores.a + scores.b}</strong>
+            <div style={{ marginTop: 10 }}>
+              <button type="button" className="light" onClick={() => setScores({ a: 0, b: 0 })}>Reset both</button>
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<ScoreBoard />);
+  </script>
+</body>
+</html>
