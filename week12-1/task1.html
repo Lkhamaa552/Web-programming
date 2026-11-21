@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 12 · Exercise 1: Toggle Details</title>
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 32px 20px; background: #F3F6F5; color: #172B2A; line-height: 1.6; }
+    h1 { color: #1E7466; margin-bottom: 4px; }
+    .intro { color: #4A5F5C; margin-top: 0; }
+    .box { background: #fff; border: 1px solid #D5DFDC; border-radius: 14px; padding: 20px 22px; margin-top: 20px; }
+    button { font-family: inherit; font-size: 15px; padding: 8px 16px; border-radius: 8px; border: 1px solid #1E7466; background: #1E7466; color: #fff; cursor: pointer; }
+    button.light { background: #fff; color: #1E7466; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button:focus-visible, input:focus-visible { outline: 3px solid #F5B642; outline-offset: 2px; }
+    .details { margin: 14px 0 0; padding: 12px 14px; background: #EAF4F1; border-left: 4px solid #1E7466; border-radius: 6px; }
+    .faq + .faq { margin-top: 14px; }
+    .faq h2 { font-size: 18px; margin: 0 0 8px; }
+  </style>
+</head>
+<body>
+  <h1>Exercise 1 · Toggle Details</h1>
+  <p class="intro">A boolean state (true / false) shows or hides the details. The button text changes with the state.</p>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // One question with its own isVisible state
+    function ToggleDetail({ question, answer }) {
+      const [isVisible, setIsVisible] = useState(false);
+
+      return (
+        <div className="box faq">
+          <h2>{question}</h2>
+          <button type="button" aria-expanded={isVisible} onClick={() => setIsVisible((prev) => !prev)}>
+            {isVisible ? "Hide details" : "Show details"}
+          </button>
+          {isVisible && <p className="details">{answer}</p>}
+        </div>
+      );
+    }
+
+    function App() {
+      return (
+        <>
+          <ToggleDetail
+            question="What is state?"
+            answer="State is data that belongs to a component and can change. When it changes, React draws the component again."
+          />
+          <ToggleDetail
+            question="Why not a normal variable?"
+            answer="A normal variable is reset every render and does not tell React to update the screen. useState keeps the value and triggers a re-render."
+          />
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
