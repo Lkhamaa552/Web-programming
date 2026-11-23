@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 11-2 · React Props Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    /* Same lavender colors as my course page */
+    :root {
+      --bg: #F7F4FB; --card: #FFFFFF; --accent: #6B4FA0; --accent-dark: #553C85;
+      --tint: #EFE9F8; --text: #2A2238; --muted: #645B73; --border: #E6DFF0;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Nunito", "Segoe UI", sans-serif; color: var(--text); line-height: 1.6;
+           background: linear-gradient(180deg, #EFE9F8 0px, var(--bg) 360px); }
+    main { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
+    h1, h2, h3 { font-family: "Fredoka", "Nunito", sans-serif; font-weight: 600; }
+    h1 { color: var(--accent-dark); font-size: clamp(2rem, 5vw, 2.8rem); margin: 8px 0 4px; }
+    .back { color: var(--accent); font-weight: 700; text-decoration: none; }
+    .lead { color: var(--muted); margin: 0 0 24px; }
+    .card { background: var(--card); border: 2px solid var(--border); border-radius: 22px; padding: 22px 24px; margin-top: 18px; }
+    .tag { display: inline-block; background: var(--tint); color: var(--accent); font-weight: 800; font-size: 0.8rem;
+            letter-spacing: 0.06em; padding: 3px 12px; border-radius: 999px; }
+    button { font: 700 0.95rem "Nunito", sans-serif; padding: 8px 16px; border-radius: 999px; cursor: pointer;
+              border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+    button.light { background: #fff; color: var(--accent); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    input, select { font: inherit; padding: 8px 12px; border: 1px solid #D5C9EA; border-radius: 12px; background: #fff; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid #F5B642; outline-offset: 2px; }
+    .q h2 { font-size: 1.15rem; margin: 6px 0 12px; }
+    .options { display: grid; gap: 8px; }
+    .opt { text-align: left; background: #fff; color: var(--text); border: 2px solid var(--border); border-radius: 14px; padding: 10px 14px; font-weight: 600; }
+    .opt:hover:not(:disabled) { border-color: var(--accent); }
+    .opt.right { border-color: #2E7D5B; background: #E7F5EE; }
+    .opt.wrong { border-color: #B3261E; background: #FCEBEA; }
+    .opt:disabled { opacity: 1; cursor: default; }
+    .why { margin: 10px 0 0; padding: 10px 14px; background: var(--tint); border-radius: 12px; }
+    .score { font-size: 1.2rem; font-weight: 800; color: var(--accent-dark); }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="index.html">← Week 11-2 home</a>
+    <h1>React Props Quiz</h1>
+    <p class="lead">Pick one answer for each question. You see the explanation right away.</p>
+    <div id="root"></div>
+  </main>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // My own questions about this week
+    const questions = [
+      {
+        text: "In <StudentProfileCard name=\"Aranjmaa\" />, what is name?",
+        options: ["A state variable", "A prop", "An HTML attribute only"],
+        answer: 1,
+        why: "Values written on a component tag are props. The component reads them from its props object."
+      },
+      {
+        text: "Can a child component change the props it receives?",
+        options: ["Yes, any time", "Only with useState", "No, props are read-only"],
+        answer: 2,
+        why: "Props are read-only. If a value must change, the parent keeps it in state and passes the new value down."
+      },
+      {
+        text: "Why do we give each item a key when using .map()?",
+        options: ["So React can tell the items apart", "To style the items", "Keys are optional decoration"],
+        answer: 0,
+        why: "A stable key (like an id) helps React know which item was added, moved or removed."
+      },
+      {
+        text: "What does props.children contain?",
+        options: ["The parent component", "Whatever is written between the opening and closing tag", "All props as an array"],
+        answer: 1,
+        why: "Anything between <Card> and </Card> arrives as props.children, so one Card can wrap different content."
+      }
+    ];
+
+    // One question card. It reports the chosen answer to the parent.
+    function Question({ number, q, chosen, onChoose }) {
+      const answered = chosen !== null;
+      return (
+        <section className="card q">
+          <span className="tag">QUESTION {number}</span>
+          <h2>{q.text}</h2>
+          <div className="options">
+            {q.options.map((opt, i) => {
+              let cls = "opt";
+              if (answered && i === q.answer) cls += " right";
+              else if (answered && i === chosen) cls += " wrong";
+              return (
+                <button key={opt} type="button" className={cls} disabled={answered} onClick={() => onChoose(i)}>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+          {answered && (
+            <p className="why">{chosen === q.answer ? "✅ Correct. " : "❌ Not quite. "}{q.why}</p>
+          )}
+        </section>
+      );
+    }
+
+    function Quiz() {
+      // One answer per question, null = not answered yet
+      const [answers, setAnswers] = useState(questions.map(() => null));
+
+      const score = answers.filter((a, i) => a === questions[i].answer).length;
+      const done = answers.every((a) => a !== null);
+
+      function choose(qIndex, optionIndex) {
+        setAnswers((prev) => prev.map((a, i) => (i === qIndex ? optionIndex : a)));
+      }
+
+      return (
+        <>
+          {questions.map((q, i) => (
+            <Question key={i} number={i + 1} q={q} chosen={answers[i]} onChoose={(opt) => choose(i, opt)} />
+          ))}
+          <div className="card">
+            <p className="score">Score: {score} / {questions.length}</p>
+            {done && <p>{score === questions.length ? "Great, all correct!" : "Read the explanations and try again."}</p>}
+            <button type="button" className="light" onClick={() => setAnswers(questions.map(() => null))}>Try again</button>
+          </div>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<Quiz />);
+  </script>
+</body>
+</html>
