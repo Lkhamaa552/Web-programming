@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 11-2 · My Mini State Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    /* Same lavender colors as my course page */
+    :root {
+      --bg: #F7F4FB; --card: #FFFFFF; --accent: #6B4FA0; --accent-dark: #553C85;
+      --tint: #EFE9F8; --text: #2A2238; --muted: #645B73; --border: #E6DFF0;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Nunito", "Segoe UI", sans-serif; color: var(--text); line-height: 1.6;
+           background: linear-gradient(180deg, #EFE9F8 0px, var(--bg) 360px); }
+    main { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
+    h1, h2, h3 { font-family: "Fredoka", "Nunito", sans-serif; font-weight: 600; }
+    h1 { color: var(--accent-dark); font-size: clamp(2rem, 5vw, 2.8rem); margin: 8px 0 4px; }
+    .back { color: var(--accent); font-weight: 700; text-decoration: none; }
+    .lead { color: var(--muted); margin: 0 0 24px; }
+    .card { background: var(--card); border: 2px solid var(--border); border-radius: 22px; padding: 22px 24px; margin-top: 18px; }
+    .tag { display: inline-block; background: var(--tint); color: var(--accent); font-weight: 800; font-size: 0.8rem;
+            letter-spacing: 0.06em; padding: 3px 12px; border-radius: 999px; }
+    button { font: 700 0.95rem "Nunito", sans-serif; padding: 8px 16px; border-radius: 999px; cursor: pointer;
+              border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+    button.light { background: #fff; color: var(--accent); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    input, select { font: inherit; padding: 8px 12px; border: 1px solid #D5C9EA; border-radius: 12px; background: #fff; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid #F5B642; outline-offset: 2px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .grid .card { margin-top: 0; }
+    .card h2 { font-size: 1.2rem; margin: 6px 0 4px; }
+    .card p.hint { margin: 0 0 12px; color: var(--muted); font-size: 0.95rem; }
+    .big { font-family: "Fredoka", sans-serif; font-size: 2.6rem; color: var(--accent); margin: 4px 0; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .row input { flex: 1 1 140px; }
+    ul.list { list-style: none; padding: 0; margin: 12px 0 0; }
+    ul.list li { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .x { padding: 2px 10px; background: #fff; color: #B3261E; border-color: #B3261E; }
+    .done { text-decoration: line-through; color: var(--muted); }
+    .bar { height: 8px; background: var(--tint); border-radius: 999px; overflow: hidden; margin-top: 8px; }
+    .bar span { display: block; height: 100%; background: var(--accent); }
+    input[type="checkbox"] { accent-color: var(--accent); width: 18px; height: 18px; }
+    label.check { display: flex; gap: 10px; align-items: center; padding: 4px 0; cursor: pointer; }
+    textarea { width: 100%; min-height: 90px; font: inherit; padding: 10px 12px; border: 1px solid #D5C9EA; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="index.html">← Week 11-2 home</a>
+    <h1>My Mini State Lab</h1>
+    <p class="lead">Each box is a small React component with its own useState. Click and type to see the value change on the page.</p>
+    <div id="root"></div>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // 1) Counter with a step I choose (my yoga breathing rounds)
+    function BreathCounter() {
+      const [rounds, setRounds] = useState(0);
+      const [step, setStep] = useState(1);
+      return (
+        <section className="card">
+          <span className="tag">01 · COUNTER</span>
+          <h2>Yoga breathing rounds</h2>
+          <p className="hint">Choose a step, then add rounds.</p>
+          <p className="big" aria-live="polite">{rounds}</p>
+          <div className="row">
+            <label htmlFor="step">Step</label>
+            <select id="step" value={step} onChange={(e) => setStep(Number(e.target.value))}>
+              {[1, 2, 5, 10].map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <button type="button" onClick={() => setRounds(rounds + step)}>+ {step}</button>
+            <button type="button" className="light" onClick={() => setRounds(Math.max(0, rounds - step))}>− {step}</button>
+            <button type="button" className="light" onClick={() => setRounds(0)}>Reset</button>
+          </div>
+        </section>
+      );
+    }
+
+    // 2) Controlled input: greeting + character count
+    function Greeting() {
+      const [name, setName] = useState("");
+      const limit = 30;
+      return (
+        <section className="card">
+          <span className="tag">02 · CONTROLLED INPUT</span>
+          <h2>Live greeting</h2>
+          <p className="hint">The text below updates while you type.</p>
+          <input aria-label="Your name" value={name} maxLength={limit} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+          <p className="big" style={{ fontSize: "1.6rem" }}>Сайн уу, {name.trim() || "friend"}! 👋</p>
+          <p className="hint">{name.length} / {limit} characters</p>
+        </section>
+      );
+    }
+
+    // 3) Array state: packing list for my dream trip
+    function PackingList() {
+      const [items, setItems] = useState([{ id: 1, text: "Passport" }, { id: 2, text: "Yoga mat" }]);
+      const [text, setText] = useState("");
+      function add(e) {
+        e.preventDefault();
+        if (!text.trim()) return;
+        setItems([...items, { id: Date.now(), text: text.trim() }]);
+        setText("");
+      }
+      return (
+        <section className="card">
+          <span className="tag">03 · LIST</span>
+          <h2>Packing list for Italy 🇮🇹</h2>
+          <p className="hint">Add with the spread operator, remove with filter.</p>
+          <form className="row" onSubmit={add}>
+            <input aria-label="New item" value={text} onChange={(e) => setText(e.target.value)} placeholder="e.g. Sunglasses" />
+            <button type="submit">Add</button>
+          </form>
+          <ul className="list">
+            {items.map((item) => (
+              <li key={item.id}>
+                {item.text}
+                <button type="button" className="x" aria-label={"Remove " + item.text} onClick={() => setItems(items.filter((i) => i.id !== item.id))}>✕</button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+    }
+
+    // 4) Toggle state inside an array of objects + progress
+    function StudyChecklist() {
+      const [tasks, setTasks] = useState([
+        { id: 1, text: "Read the Week 11 study guide", done: true },
+        { id: 2, text: "Finish Task 11-A", done: false },
+        { id: 3, text: "Explain props to a classmate", done: false }
+      ]);
+      const doneCount = tasks.filter((t) => t.done).length;
+      function toggle(id) {
+        setTasks(tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+      }
+      return (
+        <section className="card">
+          <span className="tag">04 · TOGGLE</span>
+          <h2>Study checklist</h2>
+          <p className="hint">{doneCount} of {tasks.length} done</p>
+          {tasks.map((t) => (
+            <label key={t.id} className="check">
+              <input type="checkbox" checked={t.done} onChange={() => toggle(t.id)} />
+              <span className={t.done ? "done" : ""}>{t.text}</span>
+            </label>
+          ))}
+          <div className="bar" aria-hidden="true"><span style={{ width: (doneCount / tasks.length) * 100 + "%" }}></span></div>
+        </section>
+      );
+    }
+
+    // 5) Saved note: useEffect writes to localStorage
+    function JournalNote() {
+      const [note, setNote] = useState(() => {
+        try { return localStorage.getItem("w112-note") || ""; } catch { return ""; }
+      });
+      useEffect(() => {
+        try { localStorage.setItem("w112-note", note); } catch { /* storage blocked */ }
+      }, [note]);
+      return (
+        <section className="card">
+          <span className="tag">05 · SAVED STATE</span>
+          <h2>Today's journal line ✍️</h2>
+          <p className="hint">Saved in this browser. Reload the page and it is still here.</p>
+          <textarea aria-label="Journal note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="What did I learn today?" />
+          <button type="button" className="light" onClick={() => setNote("")} disabled={!note}>Clear</button>
+        </section>
+      );
+    }
+
+    function Lab() {
+      return (
+        <div className="grid">
+          <BreathCounter />
+          <Greeting />
+          <PackingList />
+          <StudyChecklist />
+          <JournalNote />
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<Lab />);
+  </script>
+</body>
+</html>
