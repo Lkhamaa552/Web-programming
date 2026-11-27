@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 13 · Exercise 3: Skills Checklist</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+</head>
+<body>
+  <main>
+    <a class="back" href="../index.html#week-13">← Back to my course page</a>
+    <h1>Exercise 3 · Skills Checklist with Counter</h1>
+    <p class="lead">Six skills as checkboxes. A live counter shows how many are selected, and a warning appears if more than 3 are chosen.</p>
+    <div id="root"></div>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const SKILLS = ["HTML", "CSS", "JavaScript", "React", "Node.js", "Python"];
+
+    function SkillPicker() {
+      const [selected, setSelected] = useState([]);   // array of chosen skills
+
+      function toggle(skill) {
+        setSelected((prev) =>
+          prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
+        );
+      }
+
+      return (
+        <div className="card">
+          <fieldset>
+            <legend className="legend">Which skills do you want to improve this month?</legend>
+            {SKILLS.map((skill) => (
+              <label key={skill} className="choice">
+                <input type="checkbox" checked={selected.includes(skill)} onChange={() => toggle(skill)} />
+                {skill}
+              </label>
+            ))}
+          </fieldset>
+          <p aria-live="polite"><strong>{selected.length}</strong> selected{selected.length > 0 && ": " + selected.join(", ")}</p>
+          {selected.length > 3 && <p className="warning" role="alert">Please select at most 3 skills.</p>}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<SkillPicker />);
+  </script>
+</body>
+</html>
