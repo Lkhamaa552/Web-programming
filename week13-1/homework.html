@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 13 Homework · Student Profile Editor</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    .thumb { display: block; margin-top: 8px; width: 84px; height: 84px; object-fit: cover; border-radius: 50%; border: 3px solid var(--tint); }
+    .tags { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--tint); color: var(--accent-dark); font-weight: 700; padding: 3px 6px 3px 12px; border-radius: 999px; font-size: 0.9rem; }
+    .tag .x { padding: 0 8px; font-size: 1rem; line-height: 1.4; background: transparent; color: var(--accent-dark); border: 0; }
+    .preview .label { font-weight: 800; letter-spacing: 0.08em; color: var(--accent); font-size: 0.8rem; margin: 0 0 10px; }
+    .preview-top { display: flex; gap: 16px; align-items: center; }
+    .preview-top img, .avatar { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; flex: none; }
+    .avatar { display: grid; place-items: center; background: var(--accent); color: #fff; font: 600 1.6rem "Fredoka", sans-serif; }
+    .preview h2 { margin: 0; }
+    .meta { margin: 0; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="../index.html#week-13">← Back to my course page</a>
+    <h1>Homework · Student Profile Editor</h1>
+    <p class="lead">Name, 10-digit student ID, major, year, bio (under 200 characters) and a photo with preview. On submit a Profile Preview card appears. Stretch: skills as tags (Enter to add, × to remove).</p>
+    <div id="root"></div>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const MAJORS = ["Software Engineering", "Computer Engineering", "Computer Science", "AI & Data Science", "Business Administration"];
+    const EMPTY = { name: "", studentId: "", major: "", year: "", bio: "" };
+    const BIO_MAX = 200;
+
+    // Errors object: empty = valid
+    function validate(form, photo) {
+      const e = {};
+      if (!form.name.trim()) e.name = "Name is required.";
+      if (!/^\d{10}$/.test(form.studentId)) e.studentId = "Student ID must be exactly 10 digits.";
+      if (!form.major) e.major = "Please choose a major.";
+      if (!form.year) e.year = "Please choose your year.";
+      if (!form.bio.trim()) e.bio = "Bio is required.";
+      else if (form.bio.length >= BIO_MAX) e.bio = "Bio must be under 200 characters.";
+      if (!photo) e.photo = "Please choose a photo.";
+      return e;
+    }
+
+    function initials(name) {
+      return name.trim().split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+    }
+
+    // Preview card shown after a valid submit
+    function ProfilePreview({ profile, onEdit }) {
+      return (
+        <section className="card preview" aria-label="Profile preview">
+          <p className="label">PROFILE PREVIEW</p>
+          <div className="preview-top">
+            {profile.photo
+              ? <img src={profile.photo} alt={"Photo of " + profile.name} width="84" height="84" />
+              : <span className="avatar">{initials(profile.name)}</span>}
+            <div>
+              <h2>{profile.name}</h2>
+              <p className="meta">ID {profile.studentId} · Year {profile.year}</p>
+              <p className="meta">{profile.major}</p>
+            </div>
+          </div>
+          <p>{profile.bio}</p>
+          <p className="hint">bio: {profile.bio.length} / {BIO_MAX}</p>
+          {profile.skills.length > 0 && (
+            <ul className="tags">{profile.skills.map((s) => <li key={s} className="tag">{s}</li>)}</ul>
+          )}
+          <button type="button" className="light" onClick={onEdit}>Edit profile</button>
+        </section>
+      );
+    }
+
+    function ProfileEditor() {
+      const [form, setForm] = useState(EMPTY);
+      const [skills, setSkills] = useState(["React"]);
+      const [skillInput, setSkillInput] = useState("");
+      const [photoUrl, setPhotoUrl] = useState("");
+      const [errors, setErrors] = useState({});
+      const [saved, setSaved] = useState(null);
+      const fileRef = useRef(null);               // file inputs cannot be controlled
+
+      function handleChange(e) {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+      }
+
+      function handlePhoto() {
+        const file = fileRef.current.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          setErrors((prev) => ({ ...prev, photo: "Please choose an image file." }));
+          return;
+        }
+        if (photoUrl) URL.revokeObjectURL(photoUrl);
+        setPhotoUrl(URL.createObjectURL(file));
+        setErrors((prev) => ({ ...prev, photo: undefined }));
+      }
+
+      // Stretch: Enter adds a skill tag
+      function handleSkillKey(e) {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        const s = skillInput.trim();
+        if (s && !skills.includes(s)) setSkills([...skills, s]);
+        setSkillInput("");
+      }
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        const found = validate(form, photoUrl);
+        setErrors(found);
+        if (Object.values(found).some(Boolean)) return;
+        setSaved({ ...form, name: form.name.trim(), photo: photoUrl, skills });
+      }
+
+      if (saved) return <ProfilePreview profile={saved} onEdit={() => setSaved(null)} />;
+
+      const bioLeft = BIO_MAX - form.bio.length;
+      const err = (k) => errors[k] && <p id={k + "-err"} className="err">{errors[k]}</p>;
+      const aria = (k) => ({ "aria-invalid": !!errors[k], "aria-describedby": errors[k] ? k + "-err" : undefined });
+
+      return (
+        <form className="card" onSubmit={handleSubmit} noValidate>
+          <div className="field">
+            <label htmlFor="name">Full name</label>
+            <input id="name" name="name" type="text" value={form.name} onChange={handleChange} {...aria("name")} />
+            {err("name")}
+          </div>
+
+          <div className="field">
+            <label htmlFor="studentId">Student ID (10 digits)</label>
+            <input id="studentId" name="studentId" type="text" inputMode="numeric" value={form.studentId}
+              onChange={(e) => setForm((p) => ({ ...p, studentId: e.target.value.replace(/\D/g, "").slice(0, 10) }))}
+              {...aria("studentId")} />
+            <p className="hint">{form.studentId.length} / 10 digits</p>
+            {err("studentId")}
+          </div>
+
+          <div className="field">
+            <label htmlFor="major">Major</label>
+            <select id="major" name="major" value={form.major} onChange={handleChange} {...aria("major")}>
+              <option value="">Choose a major…</option>
+              {MAJORS.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+            {err("major")}
+          </div>
+
+          <fieldset>
+            <legend className="legend">Year</legend>
+            {["1", "2", "3", "4"].map((y) => (
+              <label key={y} className="choice">
+                <input type="radio" name="year" value={y} checked={form.year === y} onChange={handleChange} /> Year {y}
+              </label>
+            ))}
+            {err("year")}
+          </fieldset>
+
+          <div className="field">
+            <label htmlFor="bio">Bio</label>
+            <textarea id="bio" name="bio" value={form.bio} onChange={handleChange} {...aria("bio")} />
+            <p className={bioLeft <= 0 ? "count warn" : "count"}>bio: {form.bio.length} / {BIO_MAX}</p>
+            {err("bio")}
+          </div>
+
+          <div className="field">
+            <label htmlFor="photo">Photo</label>
+            <input id="photo" type="file" accept="image/*" ref={fileRef} onChange={handlePhoto} {...aria("photo")} />
+            {photoUrl && <img className="thumb" src={photoUrl} alt="Selected photo preview" width="84" height="84" />}
+            {err("photo")}
+          </div>
+
+          <div className="field">
+            <label htmlFor="skill">Skills (type and press Enter)</label>
+            <input id="skill" type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={handleSkillKey} placeholder="e.g. CSS" />
+            <ul className="tags">
+              {skills.map((s) => (
+                <li key={s} className="tag">
+                  {s}
+                  <button type="button" className="x" aria-label={"Remove " + s} onClick={() => setSkills(skills.filter((k) => k !== s))}>×</button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <button type="submit">Save profile</button>
+        </form>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<ProfileEditor />);
+  </script>
+</body>
+</html>
