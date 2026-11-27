@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 13 · Exercise 2: Contact Form</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+</head>
+<body>
+  <main>
+    <a class="back" href="../index.html#week-13">← Back to my course page</a>
+    <h1>Exercise 2 · Contact Form with Validation</h1>
+    <p class="lead">Name, Email and Message are checked on submit. Errors appear next to each field. After a valid submit, a thank-you message shows and the form resets.</p>
+    <div id="root"></div>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const EMPTY = { name: "", email: "", message: "" };
+
+    // Returns an errors object. Empty object = valid form.
+    function validate(form) {
+      const errors = {};
+      if (!form.name.trim()) errors.name = "Name is required.";
+      if (!form.email.trim()) errors.email = "Email is required.";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = "Enter a valid email address.";
+      if (!form.message.trim()) errors.message = "Message is required.";
+      else if (form.message.trim().length < 10) errors.message = "Message must be at least 10 characters.";
+      return errors;
+    }
+
+    function ContactForm() {
+      const [form, setForm] = useState(EMPTY);
+      const [errors, setErrors] = useState({});
+      const [sentName, setSentName] = useState("");
+
+      // One handler for all fields: uses the input's name
+      function handleChange(e) {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+      }
+
+      function handleSubmit(e) {
+        e.preventDefault();                       // stop the page reload
+        const found = validate(form);
+        setErrors(found);
+        if (Object.keys(found).length > 0) return;
+        setSentName(form.name.trim());
+        setForm(EMPTY);                           // reset the form
+      }
+
+      return (
+        <form className="card" onSubmit={handleSubmit} noValidate>
+          {sentName && <p className="success" role="status">Thank you, {sentName}! Your message was sent.</p>}
+          {["name", "email", "message"].map((field) => (
+            <div className="field" key={field}>
+              <label htmlFor={field}>{field[0].toUpperCase() + field.slice(1)}</label>
+              {field === "message" ? (
+                <textarea id={field} name={field} value={form[field]} onChange={handleChange}
+                  aria-invalid={!!errors[field]} aria-describedby={errors[field] ? field + "-err" : undefined} />
+              ) : (
+                <input id={field} name={field} type={field === "email" ? "email" : "text"} value={form[field]} onChange={handleChange}
+                  aria-invalid={!!errors[field]} aria-describedby={errors[field] ? field + "-err" : undefined} />
+              )}
+              {errors[field] && <p id={field + "-err"} className="err">{errors[field]}</p>}
+            </div>
+          ))}
+          <button type="submit">Send message</button>
+        </form>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<ContactForm />);
+  </script>
+</body>
+</html>
