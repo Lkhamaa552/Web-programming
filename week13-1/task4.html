@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 13 · Code Challenge: Multi-Step Registration</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+  <style>
+    .step { font-weight: 800; color: var(--accent); margin: 0; }
+    .progress { height: 8px; background: var(--tint); border-radius: 999px; overflow: hidden; margin: 6px 0 14px; }
+    .progress span { display: block; height: 100%; background: var(--accent); transition: width 0.2s; }
+    .summary { background: var(--tint); border-radius: 14px; padding: 12px 16px; margin-top: 12px; }
+    .summary h3 { margin: 0 0 6px; }
+    dl { display: grid; grid-template-columns: 110px 1fr; gap: 4px 10px; margin: 0; }
+    dt { font-weight: 800; color: var(--muted); }
+    dd { margin: 0; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="../index.html#week-13">← Back to my course page</a>
+    <h1>Code Challenge · Multi-Step Registration</h1>
+    <p class="lead">A 3-step wizard. "Next" stays disabled until the current step is valid. "Previous" keeps the data. The final submit logs the full object in the console (F12 → Console).</p>
+    <div id="root"></div>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const START = { name: "", email: "", username: "", password: "", confirm: "", role: "Student", newsletter: false };
+
+    // Errors for ONE step. Empty object = this step is valid.
+    function stepErrors(step, d) {
+      const e = {};
+      if (step === 1) {
+        if (d.name.trim().length < 2) e.name = "Name needs at least 2 characters.";
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) e.email = "Enter a valid email address.";
+      }
+      if (step === 2) {
+        if (d.username.length < 3) e.username = "Username needs at least 3 characters.";
+        else if (/\s/.test(d.username)) e.username = "Username cannot contain spaces.";
+        if (d.password.length < 8) e.password = "Password needs at least 8 characters.";
+        if (d.confirm !== d.password || !d.confirm) e.confirm = "Passwords do not match.";
+      }
+      return e;
+    }
+
+    function Field({ id, label, type = "text", value, onChange, error, show }) {
+      return (
+        <div className="field">
+          <label htmlFor={id}>{label}</label>
+          <input id={id} name={id} type={type} value={value} onChange={onChange}
+            aria-invalid={show && !!error} aria-describedby={show && error ? id + "-err" : undefined} />
+          {show && error && <p id={id + "-err"} className="err">{error}</p>}
+        </div>
+      );
+    }
+
+    function RegistrationWizard() {
+      const [step, setStep] = useState(1);
+      const [data, setData] = useState(START);
+      const [touched, setTouched] = useState({});    // show an error only after typing
+      const [done, setDone] = useState(false);
+
+      const errors = stepErrors(step, data);
+      const stepValid = Object.keys(errors).length === 0;
+
+      function handleChange(e) {
+        const { name, type, value, checked } = e.target;
+        setData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+        setTouched((prev) => ({ ...prev, [name]: true }));
+      }
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        const { confirm, ...fullFormObject } = data;   // do not log the password twice
+        console.log(fullFormObject);
+        setDone(true);
+      }
+
+      if (done) {
+        return (
+          <div className="card">
+            <p className="success">Welcome, {data.name}! Registration complete. Open the console (F12) to see the logged object.</p>
+            <button type="button" className="light" onClick={() => { setData(START); setTouched({}); setStep(1); setDone(false); }}>Start again</button>
+          </div>
+        );
+      }
+
+      return (
+        <form className="card" onSubmit={handleSubmit} noValidate>
+          <p className="step">Step {step} of 3</p>
+          <div className="progress" aria-hidden="true"><span style={{ width: (step / 3) * 100 + "%" }}></span></div>
+
+          {step === 1 && (
+            <>
+              <h2>Personal info</h2>
+              <Field id="name" label="Name" value={data.name} onChange={handleChange} error={errors.name} show={touched.name} />
+              <Field id="email" label="Email" type="email" value={data.email} onChange={handleChange} error={errors.email} show={touched.email} />
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              <h2>Account setup</h2>
+              <Field id="username" label="Username" value={data.username} onChange={handleChange} error={errors.username} show={touched.username} />
+              <Field id="password" label="Password" type="password" value={data.password} onChange={handleChange} error={errors.password} show={touched.password} />
+              <Field id="confirm" label="Confirm password" type="password" value={data.confirm} onChange={handleChange} error={errors.confirm} show={touched.confirm} />
+            </>
+          )}
+
+          {step === 3 && (
+            <>
+              <h2>Preferences</h2>
+              <fieldset>
+                <legend className="legend">Role</legend>
+                {["Student", "TA", "Instructor"].map((r) => (
+                  <label key={r} className="choice">
+                    <input type="radio" name="role" value={r} checked={data.role === r} onChange={handleChange} /> {r}
+                  </label>
+                ))}
+              </fieldset>
+              <label className="choice">
+                <input type="checkbox" name="newsletter" checked={data.newsletter} onChange={handleChange} /> Subscribe to the newsletter
+              </label>
+              <div className="summary">
+                <h3>Review</h3>
+                <dl>
+                  <dt>Name</dt><dd>{data.name}</dd>
+                  <dt>Email</dt><dd>{data.email}</dd>
+                  <dt>Username</dt><dd>{data.username}</dd>
+                  <dt>Password</dt><dd>{"•".repeat(data.password.length)}</dd>
+                  <dt>Role</dt><dd>{data.role}</dd>
+                  <dt>Newsletter</dt><dd>{data.newsletter ? "Yes" : "No"}</dd>
+                </dl>
+              </div>
+            </>
+          )}
+
+          <div className="buttons">
+            {step > 1 && <button type="button" className="light" onClick={() => setStep(step - 1)}>Previous</button>}
+            {step < 3 && <button type="button" disabled={!stepValid} onClick={() => setStep(step + 1)}>Next</button>}
+            {step === 3 && <button type="submit">Submit</button>}
+          </div>
+        </form>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<RegistrationWizard />);
+  </script>
+</body>
+</html>
