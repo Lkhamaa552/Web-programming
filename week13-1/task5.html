@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 13 · Practice Challenge: Course Feedback Form</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+</head>
+<body>
+  <main>
+    <a class="back" href="../index.html#week-13">← Back to my course page</a>
+    <h1>Practice Challenge · Course Feedback Form</h1>
+    <p class="lead">From the video lecture. Name and 8-digit student ID are required, rating is required, topics are optional, comments have a live 300-character counter. The button stays disabled until the required fields are filled (bonus).</p>
+    <div id="root"></div>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const TOPICS = ["HTML", "CSS", "JavaScript", "Git", "React"];
+    const RATINGS = ["⭐⭐⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐"];
+    const EMPTY = { name: "", studentId: "", rating: "", topics: [], comments: "" };
+
+    function FeedbackForm() {
+      const [form, setForm] = useState(EMPTY);
+      const [errors, setErrors] = useState({});
+      const [thanks, setThanks] = useState("");
+
+      function handleChange(e) {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: name === "comments" ? value.slice(0, 300) : value }));
+      }
+
+      function toggleTopic(topic) {
+        setForm((prev) => ({
+          ...prev,
+          topics: prev.topics.includes(topic) ? prev.topics.filter((t) => t !== topic) : [...prev.topics, topic]
+        }));
+      }
+
+      function validate() {
+        const e = {};
+        if (!form.name.trim()) e.name = "Student name is required.";
+        if (!/^\d{8}$/.test(form.studentId)) e.studentId = "Student ID must be exactly 8 digits.";
+        if (!form.rating) e.rating = "Please choose a rating.";
+        return e;
+      }
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        const found = validate();
+        setErrors(found);
+        if (Object.keys(found).length > 0) return;
+        setThanks(form.name.trim());
+        setForm(EMPTY);
+      }
+
+      // Bonus: disabled while any required field is empty
+      const requiredEmpty = !form.name.trim() || !form.studentId || !form.rating;
+
+      return (
+        <form className="card" onSubmit={handleSubmit} noValidate>
+          {thanks && <p className="success" role="status">Thank you, {thanks}! Your feedback was received.</p>}
+
+          <div className="field">
+            <label htmlFor="name">Student name *</label>
+            <input id="name" name="name" type="text" value={form.name} onChange={handleChange} aria-invalid={!!errors.name} />
+            {errors.name && <p className="err">{errors.name}</p>}
+          </div>
+
+          <div className="field">
+            <label htmlFor="studentId">Student ID (8 digits) *</label>
+            <input id="studentId" name="studentId" type="text" inputMode="numeric" value={form.studentId}
+              onChange={(e) => handleChange({ target: { name: "studentId", value: e.target.value.replace(/\D/g, "").slice(0, 8) } })}
+              aria-invalid={!!errors.studentId} />
+            {errors.studentId && <p className="err">{errors.studentId}</p>}
+          </div>
+
+          <fieldset>
+            <legend className="legend">Rating *</legend>
+            {RATINGS.map((r) => (
+              <label key={r} className="choice">
+                <input type="radio" name="rating" value={r} checked={form.rating === r} onChange={handleChange} /> {r}
+              </label>
+            ))}
+            {errors.rating && <p className="err">{errors.rating}</p>}
+          </fieldset>
+
+          <fieldset>
+            <legend className="legend">Topics covered well (optional)</legend>
+            {TOPICS.map((t) => (
+              <label key={t} className="choice">
+                <input type="checkbox" checked={form.topics.includes(t)} onChange={() => toggleTopic(t)} /> {t}
+              </label>
+            ))}
+          </fieldset>
+
+          <div className="field">
+            <label htmlFor="comments">Comments</label>
+            <textarea id="comments" name="comments" value={form.comments} onChange={handleChange} />
+            <p className={300 - form.comments.length < 30 ? "count warn" : "count"}>{form.comments.length} / 300</p>
+          </div>
+
+          <button type="submit" disabled={requiredEmpty}>Send feedback</button>
+        </form>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<FeedbackForm />);
+  </script>
+</body>
+</html>
