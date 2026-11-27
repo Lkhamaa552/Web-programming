@@ -1,0 +1,46 @@
+/* Shared style for my Week 13 pages (same lavender theme as my course page) */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg: #F7F4FB; --card: #FFFFFF; --accent: #6B4FA0; --accent-dark: #553C85;
+  --tint: #EFE9F8; --text: #2A2238; --muted: #645B73; --border: #E6DFF0;
+  --error: #B3261E; --ok: #2E7D5B;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Nunito", "Segoe UI", sans-serif; color: var(--text); line-height: 1.6;
+       background: linear-gradient(180deg, #EFE9F8 0px, var(--bg) 360px); }
+main { max-width: 760px; margin: 0 auto; padding: 32px 20px 60px; }
+h1, h2, h3 { font-family: "Fredoka", "Nunito", sans-serif; font-weight: 600; }
+h1 { color: var(--accent-dark); font-size: clamp(1.9rem, 5vw, 2.6rem); margin: 8px 0 4px; }
+.back { color: var(--accent); font-weight: 700; text-decoration: none; }
+.lead { color: var(--muted); margin: 0 0 20px; }
+.card { background: var(--card); border: 2px solid var(--border); border-radius: 22px; padding: 22px 24px; margin-top: 18px; }
+
+/* Form fields */
+.field { margin-bottom: 14px; }
+.field > label, .legend { display: block; font-weight: 800; margin-bottom: 4px; }
+fieldset { border: 0; padding: 0; margin: 0 0 14px; }
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea {
+  width: 100%; font: inherit; padding: 9px 12px; border: 1px solid #D5C9EA; border-radius: 12px; background: #fff;
+}
+textarea { min-height: 100px; resize: vertical; }
+input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--error); background: #FFF8F8; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); width: 17px; height: 17px; }
+.choice { display: inline-flex; align-items: center; gap: 6px; margin: 0 14px 6px 0; cursor: pointer; }
+.err { color: var(--error); font-size: 0.9rem; margin: 4px 0 0; }
+.hint { color: var(--muted); font-size: 0.9rem; margin: 4px 0 0; }
+.count { text-align: right; font-size: 0.9rem; color: var(--muted); margin: 4px 0 0; }
+.count.warn { color: var(--error); font-weight: 700; }
+.success { background: #E7F5EE; color: var(--ok); border-radius: 14px; padding: 12px 16px; font-weight: 700; }
+.warning { background: #FCEBEA; color: var(--error); border-radius: 14px; padding: 10px 14px; font-weight: 700; }
+
+/* Buttons */
+button { font: 700 0.95rem "Nunito", sans-serif; padding: 9px 18px; border-radius: 999px; cursor: pointer;
+         border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+button.light { background: #fff; color: var(--accent); }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+.buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible {
+  outline: 3px solid #F5B642; outline-offset: 2px;
+}
+.visually-hidden { position: absolute; left: -9999px; }
