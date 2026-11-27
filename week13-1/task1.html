@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 13 · Exercise 1: Character Counter</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- React + Babel from a CDN, so JSX works in one HTML file -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+</head>
+<body>
+  <main>
+    <a class="back" href="../index.html#week-13">← Back to my course page</a>
+    <h1>Exercise 1 · Live Character Counter</h1>
+    <p class="lead">A controlled textarea with a 200-character limit. The counter turns red when fewer than 20 characters are left.</p>
+    <div id="root"></div>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    function CharacterCounter() {
+      const MAX = 200;
+      const [text, setText] = useState("");
+      const remaining = MAX - text.length;
+
+      return (
+        <div className="card">
+          <div className="field">
+            <label htmlFor="about">Write one paragraph about your week</label>
+            <textarea
+              id="about"
+              value={text}                                   // state is the source of truth
+              onChange={(e) => setText(e.target.value.slice(0, MAX))}
+              aria-describedby="about-count"
+            />
+            <p id="about-count" className={remaining < 20 ? "count warn" : "count"}>
+              {text.length} / {MAX} · {remaining} left
+            </p>
+          </div>
+          <button type="button" className="light" onClick={() => setText("")} disabled={!text}>Clear</button>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<CharacterCounter />);
+  </script>
+</body>
+</html>
